@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="urbanmove_proyecto.client/urbanmove_proyecto.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="URBANMOVE_Proyecto.Server/URBANMOVE_Proyecto.Server.csproj" />
+</Solution>

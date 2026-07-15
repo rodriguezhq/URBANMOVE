@@ -1,0 +1,6 @@
+@URBANMOVE_Proyecto.Server_HostAddress = http://localhost:5264
+
+GET {{URBANMOVE_Proyecto.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
