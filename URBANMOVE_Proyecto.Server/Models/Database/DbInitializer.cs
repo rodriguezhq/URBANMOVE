@@ -15,7 +15,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             var defaultUser = new User
             {
                 FullName = "Admin",
-                Email = "admin@urbanmove.com",
+                Email = "admin@admin.com",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
                 CreatedAt = DateTime.UtcNow
             };
