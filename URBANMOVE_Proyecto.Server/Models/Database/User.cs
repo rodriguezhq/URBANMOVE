@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace URBANMOVE_Proyecto.Server.Models.Database
 {
-    public class User
+    public class ApplicationUser : IdentityUser
     {
-        [Key]
-        public int Id { get; set; }
-        [Required, MaxLength(100)]
-        public string FullName { get; set; } = string.Empty;
-        [Required, MaxLength(255)]
-        public string Email { get; set; } = string.Empty;
-        [Required]
-        public string PasswordHash { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public required string Name { get; set; }
+        public required string LastName { get; set; }
+
+        public bool IsApproved { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public virtual ICollection<IncidentReport>? Reports { get; set; }
     }
 }

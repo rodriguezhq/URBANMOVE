@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using URBANMOVE_Proyecto.Server.Middlewares;
@@ -14,8 +15,21 @@ builder.Services.AddOpenApi();
 // db context
 builder.Services.AddDbContext<AppDbContext>(
     (options) =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+        options.UseSqlite(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            x => x.UseNetTopologySuite()
+            )
     );
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 // cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -27,8 +41,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
-        options.LoginPath = "/auth/login";
-        options.LogoutPath = "/auth/logout";
+        options.LoginPath = "/api/auth/login";
+        options.LogoutPath = "/api/auth/logout";
     });
 
 var app = builder.Build();
@@ -38,7 +52,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await DbInitializer.InitializeAsync(db);
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    await DbInitializer.InitializeAsync(db, roleManager, userManager);
 }
 
 app.UseDefaultFiles();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -14,44 +15,61 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        public AuthController(AppDbContext db)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
-            _db = db;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        [HttpPost(Name ="")]
-        public async Task<IActionResult> Login([FromBody]LoginRequest loginRequest)
+        [HttpPost(Name = "")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
             if (user == null)
                 return Unauthorized(new { message = "Credenciales inválidas" });
 
-            if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
+            if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
                 return Unauthorized(new { message = "Credenciales inválidas" });
+
+            await _signInManager.SignInAsync(user, isPersistent: true);
             
+            var roles = await _userManager.GetRolesAsync(user);
+
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.FullName),
-                new(ClaimTypes.Email, user.Email)
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
+                new(ClaimTypes.Email, user.Email ?? ""),
+                new(ClaimTypes.Role, roles.FirstOrDefault() ?? Roles.Ciudadano),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = true,
-                ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
             };
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties
+                  );
+
             return Ok(new
             {
                 message = "Inicio de sesión exitoso",
-                user = new { user.Id, user.FullName, user.Email }
+                user = new
+                {
+                    id = user.Id,
+                    fullName = $"{user.Name} {user.LastName}",
+                    email = user.Email,
+                    role = roles.FirstOrDefault() ?? Roles.Ciudadano
+                }
             });
         }
 
@@ -69,11 +87,14 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var fullName = User.FindFirstValue(ClaimTypes.Name);
             var email = User.FindFirstValue(ClaimTypes.Email);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
             return Ok(new
             {
                 id = userId,
                 fullName,
-                email
+                email,
+                role
             });
         }
     }

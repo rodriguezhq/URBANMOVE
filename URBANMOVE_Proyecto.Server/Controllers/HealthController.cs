@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace URBANMOVE_Proyecto.Server.Controllers
 {
-    [Route("api/health")]
     [ApiController]
+    [Route("health")]
     public class HealthController : ControllerBase
     {
         [HttpGet]

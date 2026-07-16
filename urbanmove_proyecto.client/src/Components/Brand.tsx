@@ -2,7 +2,7 @@ import { Leaf, Bike, Car, TrainFront, Navigation } from 'lucide-react';
 
 function BrandPanel() {
     return (
-        <div className="hidden w-1/2 flex-col justify-between bg-gradient-to-br from-violet-600 to-purple-900 p-12 text-white lg:flex">
+        <div className="flex-col justify-between bg-gradient-to-br from-violet-600 to-purple-900 p-12 text-white">
             <div className="flex items-center gap-2">
                 <Leaf size={28} />
                 <span className="text-xl font-bold tracking-wide">URBANMOVE</span>
