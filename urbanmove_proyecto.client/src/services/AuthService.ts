@@ -1,15 +1,5 @@
 import {ApiClient} from "./api";
-
-export interface LoginType{
-    email: string;
-    password:string;
-}
-
-export interface RegisterType{
-    id: string;
-    fullName:string;
-    email: string;
-}
+import type { LoginType, RegisterType } from "../Types/authType";
 
 export const AuthService ={
     Login: async (loginData: LoginType): Promise<RegisterType> => {
