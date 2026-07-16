@@ -13,7 +13,7 @@ export interface RegisterType{
 
 export const AuthService ={
     Login: async (loginData: LoginType): Promise<RegisterType> => {
-        const response = await ApiClient.post("/auth/login", loginData);
+        const response = await ApiClient.post("/auth", loginData);
         return response.data.user;
     },
 
