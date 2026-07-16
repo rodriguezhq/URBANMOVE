@@ -47,3 +47,35 @@ En la carpeta .client ejecutar
 npm run dev
 
 ```
+
+# Cambiar la estructura de la base de datos
+
+se definen los modelos en .Server/Models/Database/
+
+AppDbContext.cs es la declaración de la base de datos,
+
+DbInitializer.cs es el seeder de la base de datos
+
+Al añadir un nuevo modelo es necesario registrarlo en: `AppDbContext.cs`
+
+La herramienta de migraciones de base de datos se instala con:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+Al modificar cualquier definición de la base de datos es necesario crear una migración, ejecutando el el proyecto .Server
+
+
+```bash
+dotnet ef migration add <nombre del a migración>
+
+```
+
+El sistema debería automaticamente ejecutar esta migracion al ejecutarse, pero tambien se puede hacer manualmente con
+
+```
+dotnet ef database update
+```
+
+
