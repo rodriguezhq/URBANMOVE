@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using URBANMOVE_Proyecto.Server.Middlewares;
 using URBANMOVE_Proyecto.Server.Models.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // db context
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(
+    (options) =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    );
 
 // cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -26,8 +30,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/auth/login";
         options.LogoutPath = "/auth/logout";
     });
-
-
 
 var app = builder.Build();
 
@@ -55,6 +57,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<NetworkMiddleware>();
 
 app.MapFallbackToFile("/index.html");
 
