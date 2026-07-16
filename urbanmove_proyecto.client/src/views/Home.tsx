@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import UserBadge from '../Components/UserBadge';
+import { useAuth } from '../Hooks/useAuth';
 
 function Home() {
     const { user, loading, logout } = useAuth();

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import AuthCard from '../Components/AuthCard';
 import AuthInput from '../Components/AuthInput';
 import AuthButton from '../Components/AuthButton';
+import { useAuth } from '../Hooks/useAuth';
 
 function Login() {
     const [email, setEmail] = useState('');

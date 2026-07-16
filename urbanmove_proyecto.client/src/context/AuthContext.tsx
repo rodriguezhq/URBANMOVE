@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/AuthService';
 import type { LoginType, RegisterType } from '../Types/authType';
@@ -10,7 +10,7 @@ interface AuthContextValue {
     logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<RegisterType | null>(null);
@@ -32,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+
     return (
         <AuthContext.Provider value={{ user, loading, Login, logout }}>
             {children}
@@ -39,10 +40,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("No la ");
-    }
-    return context;
-}
