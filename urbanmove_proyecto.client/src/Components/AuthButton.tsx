@@ -7,13 +7,14 @@ interface AuthButtonProps {
     onClick?: () => void;
 }
 
-function AuthButton({ children, disabled, type = 'submit' }: AuthButtonProps) {
+function AuthButton({ children, disabled, type = 'submit'}: AuthButtonProps) {
     return (
         <button
             type={type}
             disabled={disabled}
-            className="w-full bg-black py-2 text-sm font-semibold
-                       text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-md border border-blue-950 bg-blue-950 py-2.5 text-sm font-bold
+                       uppercase tracking-wide text-white
+                       disabled:border-black disabled:bg-black"
         >
             {children}
         </button>

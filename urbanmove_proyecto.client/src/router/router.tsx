@@ -1,4 +1,4 @@
-import { createBrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Login from '../views/Login';
 import Home from '../views/Home';
 import ProtectedRoute from '../Components/ProtectedRoute';
