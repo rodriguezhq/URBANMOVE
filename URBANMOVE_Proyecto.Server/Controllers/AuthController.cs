@@ -24,7 +24,10 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpPost(Name = "")]
+        [HttpPost()]
+        [ProducesResponseType<MeResponse>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             var user = await _userManager.FindByEmailAsync(loginRequest.Email);
@@ -36,7 +39,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 return Unauthorized(new { message = "Credenciales inválidas" });
 
             await _signInManager.SignInAsync(user, isPersistent: true);
-            
+
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
@@ -60,16 +63,13 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                     authProperties
                   );
 
-            return Ok(new
+            return Ok(new LoginResponse
             {
-                message = "Inicio de sesión exitoso",
-                user = new
-                {
-                    id = user.Id,
-                    fullName = $"{user.Name} {user.LastName}",
-                    email = user.Email,
-                    role = roles.FirstOrDefault() ?? Roles.Ciudadano
-                }
+                Id = user.Id,
+                FullName = $"{user.Name} {user.LastName}",
+                Email = user.Email ?? "",
+                Role = roles.FirstOrDefault() ?? Roles.Ciudadano,
+                Message = "Inicio de sesión exitoso"
             });
         }
 
@@ -82,6 +82,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType<MeResponse>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult GetCurrentUser()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -89,12 +91,12 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var role = User.FindFirstValue(ClaimTypes.Role);
 
-            return Ok(new
+            return Ok(new MeResponse
             {
-                id = userId,
-                fullName,
-                email,
-                role
+                Id = userId ?? "",
+                FullName = fullName ?? "",
+                Email = email ?? "",
+                Role = role ?? ""
             });
         }
     }
