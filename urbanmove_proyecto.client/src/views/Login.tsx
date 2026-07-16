@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthCard from '../Components/AuthCard';
 import AuthInput from '../Components/AuthInput';
 import AuthButton from '../Components/AuthButton';
+import BrandPanel from '../Components/Brand';
 import { useAuth } from '../Hooks/useAuth';
 import { HealthCheckService } from '../services/HealthCheckService';
 
@@ -20,9 +21,9 @@ function Login() {
     const checkHealth = async () => {
         try {
             const ok = await HealthCheckService.Check();
-            setHealth(ok ? 'API en línea' : '');
+            setHealth(ok ? '' : '');
         } catch {
-            setHealth('Error ');
+            setHealth('Error');
         }
     };
 
@@ -45,27 +46,31 @@ function Login() {
     };
 
     return (
-        <div className="relative min-h-screen">
-            <AuthCard title="Inicia sesión">
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    <AuthInput label="Correo" type="email" icon="email" value={email} onChange={setEmail} />
-                    <AuthInput label="Contraseña" type="password" icon="password" value={password} onChange={setPassword} />
+        <div className="flex min-h-screen">
+            <BrandPanel />
 
-                    {error && (
-                        <div className="border border-red-700 bg-red-50 px-3 py-2">
-                            <p className="text-sm font-medium text-red-700">{error}</p>
-                        </div>
-                    )}
+            <div className="flex w-full items-center justify-center bg-violet-50 lg:w-1/2">
+                <AuthCard title="Inicia sesión">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                        <AuthInput label="Correo" type="email" icon="email" value={email} onChange={setEmail} />
+                        <AuthInput label="Contraseña" type="password" icon="password" value={password} onChange={setPassword} />
 
-                    <AuthButton disabled={submitting}>
-                        {submitting ? 'Ingresando...' : 'Ingresar'}
-                    </AuthButton>
-                </form>
-            </AuthCard>
+                        {error && (
+                            <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">
+                                <p className="text-sm font-medium text-red-700">{error}</p>
+                            </div>
+                        )}
 
-            {health && (
-                <p className="absolute bottom-0 left-0 p-4 text-sm text-gray-500">{health}</p>
-            )}
+                        <AuthButton disabled={submitting}>
+                            {submitting ? 'Ingresando...' : 'Ingresar'}
+                        </AuthButton>
+                    </form>
+                </AuthCard>
+
+                {health && (
+                    <p className="absolute bottom-0 left-0 p-4 text-sm text-gray-500">{health}</p>
+                )}
+            </div>
         </div>
     );
 }
