@@ -318,9 +318,14 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.Property<int>("RouteId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RouteId");
+
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("Schedules");
                 });
@@ -562,12 +567,20 @@ namespace URBANMOVE_Proyecto.Server.Migrations
             modelBuilder.Entity("Schedule", b =>
                 {
                     b.HasOne("Route", "Route")
-                        .WithMany()
+                        .WithMany("RouteSchedules")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Route");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Vehicle", b =>
@@ -597,6 +610,8 @@ namespace URBANMOVE_Proyecto.Server.Migrations
 
             modelBuilder.Entity("Route", b =>
                 {
+                    b.Navigation("RouteSchedules");
+
                     b.Navigation("RouteStops");
                 });
 
