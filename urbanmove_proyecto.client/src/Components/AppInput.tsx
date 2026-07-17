@@ -21,14 +21,6 @@ const AppInnputVariante = cva(
                 subtle: "border-transparent hover:bg-gray-100 focus-within:bg-gray-100",
                 transparent: "border-transparent bg-transparent",
             } satisfies Record<Appearance, string>,
-            leading: {
-                true: "px-3",
-                false: "px-1",
-            },
-            trailing: {
-                true: "px-3",
-                false: "px-1",
-            }
         }
     }
 )
@@ -46,10 +38,10 @@ export default function AppInput({ label, type, value, onChange, appearance = 'o
                 twMerge(
                     AppInnputVariante({
                         appearance,
-                        leading: leading ? true : false,
-                        trailing: trailing ? true : false
                     }),
-                    className
+                    className,
+                    leading && "pl-2",
+                    trailing && "pr-2"
                 )
             }>
                 {leading}

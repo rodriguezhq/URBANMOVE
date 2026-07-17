@@ -5,13 +5,9 @@ interface ProtectedRouteProps {
     children: ReactNode;
 }
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { user, loading } = useAuth();
-    console.log("ProtectedRoute user:", user);
-    if (loading) {
-        return null;
+    const { user } = useAuth();
+    if (!user) {
+        return <Navigate to="/login" replace />;
     }
-    if (user) {
-        return <Navigate to="/" replace />;
-    }
-    return <>{children}</>;
+    return children;
 }

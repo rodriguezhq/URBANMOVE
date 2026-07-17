@@ -6,12 +6,12 @@ import ProtectedRoute from '../Components/ProtectedRoute';
 export function AppRoutes() {
     return (
         <Routes>
-            <Route path="/login" element={
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
                 <ProtectedRoute>
-                    <Login />
+                    <Home />
                 </ProtectedRoute>
             } />
-            <Route path="/" element={<Home />} />
         </Routes>
     )
 }

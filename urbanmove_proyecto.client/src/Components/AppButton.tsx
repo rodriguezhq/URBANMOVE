@@ -35,6 +35,7 @@ function AppButton({ children, disabled, type = 'button',className, ...props }: 
                     className
                 )
             }
+            {...props}
         >
             {children}
         </button>

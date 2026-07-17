@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppButton from '../Components/AppButton';
 import { useAuth } from '../Hooks/useAuth';
 import { HealthCheckService } from '../services/HealthCheckService';
-import { Bike, Car, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';
+import { Bike, Car, Eye, EyeClosed, EyeOff, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';
 import AppInput from '../Components/AppInput';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [health, setHealth] = useState('');
 
-    const { Login } = useAuth();
+    const { Login, user } = useAuth();
     const navigate = useNavigate();
 
     const checkHealth = async () => {
@@ -27,11 +27,13 @@ function Login() {
     };
 
     useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
         checkHealth();
     }, []);
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setError(null);
         setSubmitting(true);
         try {
@@ -77,7 +79,7 @@ function Login() {
 
             <div className="flex w-full items-start lg:items-center justify-center bg-white rounded-t-2xl lg:rounded-none p-8 z-10">
 
-                <form onSubmit={handleSubmit} className="flex flex-col justify-center items-start gap-5">
+                <form onSubmit={(e)=>{e.preventDefault(); handleSubmit();}} className="flex flex-col justify-center items-start gap-5">
                     <h2 className='text-3xl lg:text-5xl font-medium pb-6 lg:pb-24'>
                         <span className='text-violet-600 font-bold'>
                             Hola,
@@ -96,10 +98,21 @@ function Login() {
                     <AppInput
                         label="Contraseña"
                         appearance='filled'
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         containerClassName='w-full'
                         value={password} onChange={(e) => setPassword(e.target.value)}
-                        leading={<Lock />} />
+                        leading={<Lock />}
+                        trailing={
+                            <AppButton
+                                appearance='transparent'
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {
+                                    showPassword ? <EyeOff /> : <Eye />
+                                }
+                            </AppButton>
+                        }
+                    />
 
                     <AppButton disabled={submitting} type='submit' className='w-full'>
                         {submitting ? 'Ingresando...' : 'Ingresar'}
