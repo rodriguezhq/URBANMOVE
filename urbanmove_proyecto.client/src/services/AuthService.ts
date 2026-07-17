@@ -1,5 +1,6 @@
 import {ApiClient} from "./api";
 import type { LoginType, UserType } from "../Types/authType";
+import type { RegisterType } from "../Types/RegisterType";
 
 export const AuthService ={
     Login: async (loginData: LoginType): Promise<UserType> => {
@@ -19,4 +20,10 @@ export const AuthService ={
         return null;
       }
     },
+    
+    register: async (registerData: RegisterType): Promise<UserType> => {
+        const response = await ApiClient.post("/auth/register", registerData);
+        return response.data;
+    }
+
 };

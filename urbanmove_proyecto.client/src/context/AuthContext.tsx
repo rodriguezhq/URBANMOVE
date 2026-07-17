@@ -2,11 +2,13 @@ import { createContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/AuthService';
 import type { LoginType, UserType } from '../Types/authType';
+import type {RegisterType} from "../Types/RegisterType";
 
 interface AuthContextValue {
     user: UserType | null;
     loading: boolean;
     Login: (loginData: LoginType) => Promise<boolean>;
+    register: (registerData: RegisterType) => Promise<boolean>;
     logout: () => Promise<void>;
 }
 
@@ -39,12 +41,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setLoading(false);
     };
-    
+
+    const register = async (registerData: RegisterType): Promise<boolean> => {
+        setLoading(true);
+        let result = false;
+        try {
+            const newUser = await AuthService.register(registerData);
+            setUser(newUser);
+            result = true;
+        } catch (error) {
+            console.error("Fallo de Registro", error);
+        } finally {
+            setLoading(false);
+        }
+        return result;
+    };
+
     const values = useMemo(() => ({
         user,
         loading,
         Login,
-        logout
+        logout,
+        register
     }), [user, loading]);
 
     
