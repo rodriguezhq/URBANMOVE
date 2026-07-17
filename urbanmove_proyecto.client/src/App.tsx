@@ -2,13 +2,6 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { HealthCheckService } from './services/HealthCheckService';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
-
 function App() {
     const [status, setStatus] = useState<string | null>(null);
 

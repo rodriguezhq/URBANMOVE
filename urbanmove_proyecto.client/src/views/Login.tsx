@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppButton from '../Components/AppButton';
-import BrandPanel from '../Components/Brand';
 import { useAuth } from '../Hooks/useAuth';
 import { HealthCheckService } from '../services/HealthCheckService';
 import { Bike, Car, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';

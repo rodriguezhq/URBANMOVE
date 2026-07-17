@@ -1,40 +1,61 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/AuthService';
-import type { LoginType, RegisterType } from '../Types/authType';
+import type { LoginType, UserType } from '../Types/authType';
 
 interface AuthContextValue {
-    user: RegisterType | null;
+    user: UserType | null;
     loading: boolean;
-    Login: (loginData: LoginType) => Promise<void>;
+    Login: (loginData: LoginType) => Promise<boolean>;
     logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<RegisterType | null>(null);
+    const [user, setUser] = useState<UserType | null>(null);
     const [loading, setLoading] = useState(true);
 
+    
+    const Login = async (loginData: LoginType) : Promise<boolean> => {
+        setLoading(true);
+        let result = false;
+        try {
+            const loggedUser = await AuthService.Login(loginData);
+            setUser(loggedUser);
+            result = true;
+        } catch (error) {
+            console.error("Login failed", error);
+        } finally {
+            setLoading(false);
+        }
+        
+        return result;
+    };
+    
+    const logout = async () => {
+        setLoading(true);
+        await AuthService.logout();
+        setUser(null);
+        setLoading(false);
+    };
+    
+    const values = useMemo(() => ({
+        user,
+        loading,
+        Login,
+        logout
+    }), [user, loading]);
+
+    
     useEffect(() => {
         AuthService.getCurrentUser()
             .then(setUser)
             .finally(() => setLoading(false));
     }, []);
 
-    const Login = async (loginData: LoginType) => {
-        const loggedUser = await AuthService.Login(loginData);
-        setUser(loggedUser);
-    };
-
-    const logout = async () => {
-        await AuthService.logout();
-        setUser(null);
-    };
-
-
     return (
-        <AuthContext.Provider value={{ user, loading, Login, logout }}>
+        <AuthContext.Provider value={values}>
             {children}
         </AuthContext.Provider>
     );

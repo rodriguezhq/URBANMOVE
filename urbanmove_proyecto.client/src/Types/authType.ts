@@ -3,8 +3,9 @@ export interface LoginType {
     password: string;
 }
 
-export interface RegisterType {
+export interface UserType {
     id: string;
     fullName: string;
     email: string;
+    rol: string;
 }

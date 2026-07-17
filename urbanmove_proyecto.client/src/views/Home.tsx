@@ -7,19 +7,20 @@ function Home() {
     const { user, loading, logout } = useAuth();
     const navigate = useNavigate();
 
+    
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
+    
     useEffect(() => {
         if (!loading && !user) {
             navigate('/login');
         }
     }, [loading, user, navigate]);
 
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
-    };
-
     if (loading || !user) return null;
-
+    
     return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50">
             <UserBadge fullName={user.fullName} email={user.email} />

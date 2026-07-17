@@ -76,6 +76,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
+            await _signInManager.SignOutAsync();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok(new { message = "Sesión cerrada" });
         }
