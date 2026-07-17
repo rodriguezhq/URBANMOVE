@@ -44,17 +44,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (registerData: RegisterType): Promise<boolean> => {
         setLoading(true);
-        let result = false;
         try {
             const newUser = await AuthService.register(registerData);
             setUser(newUser);
-            result = true;
+            return true;
         } catch (error) {
             console.error("Fallo de Registro", error);
+            throw error;
         } finally {
             setLoading(false);
         }
-        return result;
     };
 
     const values = useMemo(() => ({

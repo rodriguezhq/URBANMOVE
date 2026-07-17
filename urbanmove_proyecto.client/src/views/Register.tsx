@@ -1,15 +1,151 @@
 import { useNavigate } from "react-router-dom";
 import AppButton from "../Components/AppButton";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import AppInput from '../Components/AppInput';
+import Spinner from '../Components/Spinner';
+import { useAuth } from '../Hooks/useAuth';
 
-export default function Register() {
+function Register() {
+    const [name, setName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
+
+    const { register, user, loading } = useAuth();
     const navigate = useNavigate();
 
-    return (
-        <div>
-            <AppButton type='button' appearance='subtle' onClick={() => navigate('/login')} className='flex items-center justify-start gap-2 w-full'>
-                <ChevronLeft/> Iniciar sesión
-            </AppButton>
-        </div>
-    )
+    const handleSubmit = async () => {
+        setError(null);
+
+        if (password !== confirmPassword) {
+            setError('Las contraseñas no coinciden');
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const success = await register({ name, lastName, email, password, confirmPassword });
+            if (success) {
+                navigate('/app');
+            } else {
+                setError('No se completo el registro');
+            }
+        } catch {
+            setError('No se completo el registro');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            navigate('/app');
+        }
+    }, [user]);
+
+    return (<>
+        {
+            loading
+                ? <div className="flex flex-col items-center justify-center gap-4">
+                    <Spinner />
+                </div>
+                :
+                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex flex-col justify-center items-start gap-5">
+                    <h2 className='text-3xl lg:text-5xl font-medium pb-6 lg:pb-24'>
+                        <span className='text-violet-600 font-bold'>
+                            Crea tu cuenta
+                        </span>
+                        <br />
+                        Unete a URBANMOVE
+                    </h2>
+
+                    <div className='flex w-full gap-3'>
+                        <AppInput
+                            label="Nombre"
+                            appearance='filled'
+                            type="text"
+                            containerClassName='w-full'
+                            value={name} onChange={(e) => setName(e.target.value)}
+                            leading={<User />} />
+                        <AppInput
+                            label="Apellido"
+                            appearance='filled'
+                            type="text"
+                            containerClassName='w-full'
+                            value={lastName} onChange={(e) => setLastName(e.target.value)}
+                            leading={<User />} />
+                    </div>
+
+                    <AppInput
+                        label="Correo"
+                        appearance='filled'
+                        type="email"
+                        containerClassName='w-full'
+                        value={email} onChange={(e) => setEmail(e.target.value)}
+                        leading={<Mail />} />
+
+                    <AppInput
+                        label="Contraseña"
+                        appearance='filled'
+                        type={showPassword ? "text" : "password"}
+                        containerClassName='w-full'
+                        value={password} onChange={(e) => setPassword(e.target.value)}
+                        leading={<Lock />}
+                        trailing={
+                            <AppButton
+                                type='button'
+                                appearance='transparent'
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {
+                                    showPassword ? <EyeOff /> : <Eye />
+                                }
+                            </AppButton>
+                        }
+                    />
+
+                    <AppInput
+                        label="Confirmar contraseña"
+                        appearance='filled'
+                        type={showConfirmPassword ? "text" : "password"}
+                        containerClassName='w-full'
+                        value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                        leading={<Lock />}
+                        trailing={
+                            <AppButton
+                                type='button'
+                                appearance='transparent'
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                {
+                                    showConfirmPassword ? <EyeOff /> : <Eye />
+                                }
+                            </AppButton>
+                        }
+                    />
+
+                    <AppButton disabled={submitting || loading} type='submit' className='w-full'>
+                        {submitting ? <><Spinner /> registrando...</> : 'Registrarse'}
+                    </AppButton>
+                    <AppButton disabled={submitting || loading} type='button' appearance='subtle' onClick={() => navigate('/login')} className='flex items-center justify-start gap-2 w-full'>
+                        <ChevronLeft /> Iniciar sesión
+                    </AppButton>
+
+                    {error && (
+                        <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">
+                            <p className="text-sm font-medium text-red-700">{error}</p>
+                        </div>
+                    )}
+                </form>
+        }
+    </>
+    );
 }
+
+export default Register;
