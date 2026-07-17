@@ -100,27 +100,29 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 Role = role ?? ""
             });
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request){
             if(request.Password != request.ConfirmPassword){
-                 return BadRequest(new {message = "Las contraseñas son diferentes"}):
+                 return BadRequest(new {message = "Las contraseñas son diferentes"});
             }
             
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if(existingUser != null){
                 return BadRequest(new {message = "El correo ya está registrado"});
             }
-            var user = new AplicationUser{
+            var user = new ApplicationUser{
                 UserName = request.Email,
                 Email = request.Email,
                 Name = request.Name,
                 LastName = request.LastName,
                 CreatedAt = DateTime.UtcNow,
                 IsApproved = false
-            }
+            };
             var result = await _userManager.CreateAsync(user, request.Password);
             if(!result.Succeeded){
-                return BadRequest(new {message = "Error al crear el usuario"});
+                var errors = string.Join(",",result.Errors.select(e => e.Description));
+                return BadRequest(new {message = errors});
             }
 
             await _userManager.AddToRoleAsync(user, Roles.Ciudadano);
