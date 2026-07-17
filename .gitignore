@@ -11,6 +11,12 @@
 # Migraciones EF Core 
 URBANMOVE_Proyecto.Server/Migrations/
 
+# Migraciones EF Core que ya estaban en el proyecto
+URBANMOVE_Proyecto.Server/Migrations/*
+!URBANMOVE_Proyecto.Server/Migrations/20260716173131_AddedBaseDatabase.cs
+!URBANMOVE_Proyecto.Server/Migrations/20260716173131_AddedBaseDatabase.Designer.cs
+!URBANMOVE_Proyecto.Server/Migrations/AppDbContextModelSnapshot.cs
+
 # User-specific files
 *.rsuser
 *.suo
