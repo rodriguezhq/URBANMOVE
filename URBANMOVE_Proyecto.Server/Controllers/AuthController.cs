@@ -121,7 +121,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             };
             var result = await _userManager.CreateAsync(user, request.Password);
             if(!result.Succeeded){
-                var errors = string.Join(",",result.Errors.select(e => e.Description));
+                var errors = string.Join(",",result.Errors.Select(e => e.Description));
                 return BadRequest(new {message = errors});
             }
 
