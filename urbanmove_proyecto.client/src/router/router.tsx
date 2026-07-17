@@ -15,7 +15,6 @@ export function AppRoutes() {
                 </ProtectedRoute>
             } >
                 <Route path="" element={<Home/>} />
-                <Route path="*" element={<Navigate to="/app" /> } />
             </Route>
         </Routes>
     )

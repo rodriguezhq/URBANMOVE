@@ -1,20 +1,55 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
-import { useState } from 'react';
-import { LogOut, Menu } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Home, Layout, LogOut, Menu } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
+import type { RolType } from '../../Types/authType';
+
+type RouteType = {
+    url: string;
+    icon: React.ReactNode;
+    name: string;
+}
+
+const Routes = {
+    ciudadano: [
+        { url: '/app/home', icon: <Home size={24} />, name: 'Inicio' },
+    ],
+    operador: [
+        { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+    ],
+    admin: [
+        { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+    ]
+} satisfies Record<RolType, RouteType[]>
 
 function MainLayout() {
     const [showSidebar, setShowSidebar] = useState(false);
-
-    const { loading, logout } = useAuth();
+    const { user, loading, logout  } = useAuth();
     const navigate = useNavigate();
+
+    const userRole = useMemo(() => user?.rol || 'ciudadano', [user]);
 
     const handleLogout = async () => {
         await logout();
         navigate('/login');
     };
+
+    const renderRoutes = useMemo(() => {
+        return Routes[userRole]?.map((route) => (
+            <AppButton
+                key={route.url}
+                appearance='subtle'
+                className='h-14 flex text-white w-full justify-start items-center gap-2 p-4'
+                onClick={() => navigate(route.url)}
+                title={route.name}
+            >
+                {route.icon}
+                {showSidebar && <span className='tracking-wide'>{route.name}</span>}
+            </AppButton>
+        ));
+    }, [userRole, showSidebar, navigate]);
 
     return (
         <div className='grid grid-cols-1 md:grid-cols-[auto_1fr] grid-rows-1 h-screen'>
@@ -35,14 +70,14 @@ function MainLayout() {
                     </AppButton>
                 </header>
                 <nav className='overflow-y-auto'>
-
+                    {renderRoutes}
                 </nav>
                 <footer>
                     <AppButton
-                    appearance='subtle'
-                    disabled={loading}
-                    onClick={handleLogout}
-                    className='h-14 flex text-white w-full justify-start items-center gap-2 p-4'
+                        appearance='subtle'
+                        disabled={loading}
+                        onClick={handleLogout}
+                        className='h-14 flex text-white w-full justify-start items-center gap-2 p-4'
                     >
                         <LogOut size={24} />
                         {showSidebar && <span className='tracking-wide'>Cerrar sesión</span>}
@@ -66,7 +101,7 @@ function MainLayout() {
                     </AppButton>
                 </header>
                 <nav className='overflow-y-auto'>
-
+                    {renderRoutes}
                 </nav>
                 <footer>
                     <AppButton
