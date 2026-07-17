@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import AppButton from '../Components/AppButton';
 import { useAuth } from '../Hooks/useAuth';
 import { HealthCheckService } from '../services/HealthCheckService';
-import { Bike, Car, Eye, EyeClosed, EyeOff, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';
+import { Bike, Car, Eye, EyeOff, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';
 import AppInput from '../Components/AppInput';
+import Spinner from '../Components/Spinner';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -12,39 +13,42 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
-    const [health, setHealth] = useState('');
 
-    const { Login, user } = useAuth();
+    const { Login, user, loading } = useAuth();
     const navigate = useNavigate();
 
     const checkHealth = async () => {
         try {
             const ok = await HealthCheckService.Check();
-            setHealth(ok ? '' : '');
+            console.log('Health check:', ok);
         } catch {
-            setHealth('Error');
+            console.error('Health check failed');
         }
     };
-
-    useEffect(() => {
-        if (user) {
-            navigate('/');
-        }
-        checkHealth();
-    }, []);
 
     const handleSubmit = async () => {
         setError(null);
         setSubmitting(true);
         try {
             await Login({ email, password });
-            navigate('/');
+            navigate('/app');
         } catch {
             setError('Correo o contraseña incorrectos');
         } finally {
             setSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        if (user) {
+            navigate('/app');
+        }
+    }, [user]);
+
+    useEffect(() => {
+        checkHealth();
+    }, []);
+
 
     return (
         <div className="grid grid-cols-1 grid-rows-[1fr_2fr] min-h-screen lg:grid-cols-2 lg:grid-rows-1 bg-gradient-to-br from-violet-600 to-purple-900 overflow-hidden">
@@ -78,61 +82,63 @@ function Login() {
             </aside>
 
             <div className="flex w-full items-start lg:items-center justify-center bg-white rounded-t-2xl lg:rounded-none p-8 z-10">
-
-                <form onSubmit={(e)=>{e.preventDefault(); handleSubmit();}} className="flex flex-col justify-center items-start gap-5">
-                    <h2 className='text-3xl lg:text-5xl font-medium pb-6 lg:pb-24'>
-                        <span className='text-violet-600 font-bold'>
-                            Hola,
-                        </span>
-                        <br />
-                        Bienvenido de vuelta
-                    </h2>
-
-                    <AppInput
-                        label="Correo"
-                        appearance='filled'
-                        type="email"
-                        containerClassName='w-full'
-                        value={email} onChange={(e) => setEmail(e.target.value)}
-                        leading={<Mail />} />
-                    <AppInput
-                        label="Contraseña"
-                        appearance='filled'
-                        type={showPassword ? "text" : "password"}
-                        containerClassName='w-full'
-                        value={password} onChange={(e) => setPassword(e.target.value)}
-                        leading={<Lock />}
-                        trailing={
-                            <AppButton
-                                appearance='transparent'
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {
-                                    showPassword ? <EyeOff /> : <Eye />
-                                }
-                            </AppButton>
-                        }
-                    />
-
-                    <AppButton disabled={submitting} type='submit' className='w-full'>
-                        {submitting ? 'Ingresando...' : 'Ingresar'}
-                    </AppButton>
-                    <AppButton disabled={submitting} type='button' appearance='subtle' onClick={() => navigate('/register')} className='-mt-2 w-full'>
-                        Registrarse
-                    </AppButton>
-
-                    {error && (
-                        <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">
-                            <p className="text-sm font-medium text-red-700">{error}</p>
+                {
+                    loading
+                        ? <div className="flex flex-col items-center justify-center gap-4">
+                            <Spinner />
                         </div>
-                    )}
-                </form>
+                        :
+                        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex flex-col justify-center items-start gap-5">
+                            <h2 className='text-3xl lg:text-5xl font-medium pb-6 lg:pb-24'>
+                                <span className='text-violet-600 font-bold'>
+                                    Hola,
+                                </span>
+                                <br />
+                                Bienvenido de vuelta
+                            </h2>
 
-                {health && (
-                    <p className="absolute bottom-0 left-0 p-4 text-sm text-gray-500">{health}</p>
-                )}
+                            <AppInput
+                                label="Correo"
+                                appearance='filled'
+                                type="email"
+                                containerClassName='w-full'
+                                value={email} onChange={(e) => setEmail(e.target.value)}
+                                leading={<Mail />} />
+                            <AppInput
+                                label="Contraseña"
+                                appearance='filled'
+                                type={showPassword ? "text" : "password"}
+                                containerClassName='w-full'
+                                value={password} onChange={(e) => setPassword(e.target.value)}
+                                leading={<Lock />}
+                                trailing={
+                                    <AppButton
+                                        appearance='transparent'
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {
+                                            showPassword ? <EyeOff /> : <Eye />
+                                        }
+                                    </AppButton>
+                                }
+                            />
+
+                            <AppButton disabled={submitting || loading} type='submit' className='w-full'>
+                                {submitting ? <><Spinner /> ingresando...</> : 'Ingresar'}
+                            </AppButton>
+                            <AppButton disabled={submitting || loading} type='button' appearance='subtle' onClick={() => navigate('/register')} className='-mt-2 w-full'>
+                                Registrarse
+                            </AppButton>
+
+                            {error && (
+                                <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">
+                                    <p className="text-sm font-medium text-red-700">{error}</p>
+                                </div>
+                            )}
+                        </form>
+                }
             </div>
-        </div>
+        </div >
     );
 }
 

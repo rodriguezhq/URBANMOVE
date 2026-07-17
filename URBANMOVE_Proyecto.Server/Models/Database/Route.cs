@@ -12,4 +12,5 @@ public class Route
 
     // relaciones
     public virtual ICollection<RouteStop>? RouteStops { get; set; }
+    public virtual ICollection<Schedule>? RouteSchedules { get; set; }
 }

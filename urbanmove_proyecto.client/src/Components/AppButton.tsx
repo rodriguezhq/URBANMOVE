@@ -13,7 +13,7 @@ const buttonVariants = cva(
             appearance: {
                 filled: "border-transparent bg-blue-800 text-white hover:bg-blue-700",
                 outline: "border-blue-800 text-blue-800 hover:bg-blue-100/50",
-                subtle: "bg-transparent text-blue-800 hover:bg-blue-100 border-transparent",
+                subtle: "bg-transparent text-blue-800 hover:bg-neutral-300/10 border-transparent",
                 transparent: "bg-transparent text-blue-800 border-transparent",
             } satisfies Record<Appearance, string>
         }

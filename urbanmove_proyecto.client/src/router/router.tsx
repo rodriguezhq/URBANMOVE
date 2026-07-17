@@ -1,17 +1,22 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from '../views/Login';
-import Home from '../views/Home';
+import MainLayout from '../Components/shared/MainLayout';
 import ProtectedRoute from '../Components/ProtectedRoute';
+import Home from '../views/Home';
 
 export function AppRoutes() {
     return (
         <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={
+            <Route path="/app/*" element={
                 <ProtectedRoute>
-                    <Home />
+                    <MainLayout />
                 </ProtectedRoute>
-            } />
+            } >
+                <Route path="" element={<Home/>} />
+                <Route path="*" element={<Navigate to="/app" /> } />
+            </Route>
         </Routes>
     )
 }

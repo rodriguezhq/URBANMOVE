@@ -12,4 +12,8 @@ public class Schedule
     [ForeignKey(name: nameof(Route))]
     public int RouteId { get; set; }
     public virtual required Route Route { get; set; }
+
+    [ForeignKey(name: nameof(Vehicle))]
+    public int VehicleId { get; set; }
+    public virtual Vehicle? Vehicle { get; set; }
 }
