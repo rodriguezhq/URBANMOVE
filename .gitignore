@@ -8,9 +8,6 @@
 *.db-shm
 *.db-wal
 
-# Migraciones EF Core 
-URBANMOVE_Proyecto.Server/Migrations/
-
 # User-specific files
 *.rsuser
 *.suo
