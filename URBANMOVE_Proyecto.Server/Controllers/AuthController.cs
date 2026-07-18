@@ -111,8 +111,19 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             if(existingUser != null){
                 return BadRequest(new {message = "El correo ya está registrado"});
             }
+
+            var existingUserName = await _userManager.FindByNameAsync(request.UserName);
+            if(existingUserName != null){
+                return BadRequest(new {message = "Ese nombre de usuario ya está en uso, elige otro"});
+            }
+
+            var existingDni = await _userManager.Users.AnyAsync(u => u.DNI == request.DNI);
+            if(existingDni){
+                return BadRequest(new {message = "Ese DNI ya está registrado"});
+            }
+
             var user = new Usuario{
-                UserName = request.Email,
+                UserName = request.UserName,
                 Email = request.Email,
                 Nombres = request.Nombres,
                 Apellidos = request.Apellidos,

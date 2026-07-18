@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import AppButton from "../Components/AppButton";
-import { ChevronLeft, Eye, EyeOff, IdCard, Lock, Mail, User } from 'lucide-react';
+import { AtSign, ChevronLeft, Eye, EyeOff, IdCard, Lock, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppInput from '../Components/AppInput';
 import Spinner from '../Components/Spinner';
 import { useAuth } from '../Hooks/useAuth';
+import { isAxiosError } from 'axios';
 
 function Register() {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [dni, setDni] = useState('');
+    const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,14 +33,14 @@ function Register() {
 
         setSubmitting(true);
         try {
-            const success = await register({ nombres: name, apellidos: lastName, dni, email, password, confirmPassword });
-            if (success) {
-                navigate('/app');
+            await register({ nombres: name, apellidos: lastName, dni, userName, email, password, confirmPassword });
+            navigate('/app');
+        } catch (err) {
+            if (isAxiosError(err) && err.response?.data?.message) {
+                setError(err.response.data.message);
             } else {
                 setError('No se completo el registro');
             }
-        } catch {
-            setError('No se completo el registro');
         } finally {
             setSubmitting(false);
         }
@@ -90,13 +92,24 @@ function Register() {
                             leading={<IdCard />} />
                     </div>
 
-                    <AppInput
-                        label="Correo"
-                        appearance='filled'
-                        type="email"
-                        containerClassName='w-full'
-                        value={email} onChange={(e) => setEmail(e.target.value)}
-                        leading={<Mail />} />
+                    <div className='flex w-full gap-3'>
+                        <AppInput
+                            label="Correo"
+                            appearance='filled'
+                            type="email"
+                            containerClassName='w-full'
+                            value={email} onChange={(e) => setEmail(e.target.value)}
+                            leading={<Mail />} />
+
+                        <AppInput
+                            label="Nombre de usuario"
+                            appearance='filled'
+                            type="text"
+                            containerClassName='w-full'
+                            value={userName} onChange={(e) => setUserName(e.target.value)}
+                            required
+                            leading={<AtSign />} />
+                    </div>
 
                     <AppInput
                         label="Contraseña"
