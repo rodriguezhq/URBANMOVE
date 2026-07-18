@@ -15,10 +15,10 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<Usuario> _userManager;
+        private readonly SignInManager<Usuario> _signInManager;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -45,7 +45,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
+                new(ClaimTypes.Name, $"{user.Nombres} {user.Apellidos}"),
                 new(ClaimTypes.Email, user.Email ?? ""),
                 new(ClaimTypes.Role, roles.FirstOrDefault() ?? Roles.Ciudadano),
             };
@@ -66,7 +66,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new LoginResponse
             {
                 Id = user.Id,
-                FullName = $"{user.Name} {user.LastName}",
+                FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = roles.FirstOrDefault() ?? Roles.Ciudadano,
                 Message = "Inicio de sesión exitoso"
@@ -111,13 +111,12 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             if(existingUser != null){
                 return BadRequest(new {message = "El correo ya está registrado"});
             }
-            var user = new ApplicationUser{
+            var user = new Usuario{
                 UserName = request.Email,
                 Email = request.Email,
-                Name = request.Name,
-                LastName = request.LastName,
-                CreatedAt = DateTime.UtcNow,
-                IsApproved = false
+                Nombres = request.Nombres,
+                Apellidos = request.Apellidos,
+                DNI = request.DNI,
             };
             var result = await _userManager.CreateAsync(user, request.Password);
             if(!result.Succeeded){
@@ -130,7 +129,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
             return Ok(new LoginResponse{
                 Id = user.Id,
-                FullName = $"{user.Name} {user.LastName}",
+                FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = Roles.Ciudadano,
                 Message = "Registro exitoso"

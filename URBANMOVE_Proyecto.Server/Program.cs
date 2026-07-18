@@ -21,7 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(
             )
     );
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
     {
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6;
@@ -53,7 +53,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
     await DbInitializer.InitializeAsync(db, roleManager, userManager);
 }
 

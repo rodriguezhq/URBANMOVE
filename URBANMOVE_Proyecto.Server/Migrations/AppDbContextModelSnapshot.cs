@@ -18,110 +18,6 @@ namespace URBANMOVE_Proyecto.Server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
-            modelBuilder.Entity("EcoPointsAccount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CurrentPoints")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EcoPointsAccounts");
-                });
-
-            modelBuilder.Entity("EcoTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("EcoTransactions");
-                });
-
-            modelBuilder.Entity("IncidentImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IncidentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IncidentId");
-
-                    b.ToTable("IncidentImages");
-                });
-
-            modelBuilder.Entity("IncidentReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Point>("Location")
-                        .IsRequired()
-                        .HasColumnType("POINT");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("IncidentReports");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -250,87 +146,319 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Route", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.ComercioAliado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<LineString>("Geometry")
+                    b.Property<string>("Direccion")
                         .IsRequired()
-                        .HasColumnType("LINESTRING");
-
-                    b.Property<string>("LineCode")
-                        .IsRequired()
+                        .HasMaxLength(250)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Nombre")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Routes");
-                });
-
-            modelBuilder.Entity("RouteStop", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Point>("Location")
+                    b.Property<Point>("Ubicacion")
                         .IsRequired()
                         .HasColumnType("POINT");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RouteId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("Nombre")
+                        .IsUnique();
 
-                    b.ToTable("RouteStops");
+                    b.ToTable("ComercioAliado");
                 });
 
-            modelBuilder.Entity("Schedule", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Incidente", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<TimeOnly>("DepartureTime")
+                    b.Property<int>("Categoria")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("FrequencyMinutes")
+                    b.Property<string>("ImagenUrl")
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Point>("Ubicacion")
+                        .IsRequired()
+                        .HasColumnType("POINT");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("descripcion")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Incidentes");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Linea", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("RouteId")
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Lineas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Parada", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("VehicleId")
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Point>("Ubicacion")
+                        .IsRequired()
+                        .HasColumnType("POINT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Paradas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.PuntosLedger", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ComercioId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComercioId");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("PuntosLedgers");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Ruta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LineaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<LineString>("Recorrido")
+                        .IsRequired()
+                        .HasColumnType("LINESTRING");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LineaId");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("Rutas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.RutaParada", b =>
+                {
+                    b.Property<int>("RutaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ParadaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TiempoDescansoSegundos")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("RutaId", "ParadaId");
+
+                    b.HasIndex("ParadaId");
+
+                    b.ToTable("RutaParadas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.SalidaProgramada", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiaSemana")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly?>("FechaFinRecurrencia")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FechaHoraLlegadaEstimada")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FechaHoraSalida")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RutaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TipoProgramacion")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UnidadTransporteId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RutaId");
 
-                    b.HasIndex("VehicleId");
+                    b.HasIndex("UnidadTransporteId");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("SalidasProgramadas");
                 });
 
-            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaReserva")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("FechaValidacion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OperadorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SalidaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UnidadId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperadorId");
+
+                    b.HasIndex("SalidaId");
+
+                    b.HasIndex("UnidadId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.UnidadTransporte", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Capacidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("VelocidadPromedioKmH")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Placa")
+                        .IsUnique();
+
+                    b.ToTable("UnidadesTransporte");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Usuario", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -338,11 +466,21 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Apellidos")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<string>("DNI")
+                        .IsRequired()
+                        .HasMaxLength(8)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -352,11 +490,7 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
+                    b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
@@ -365,8 +499,9 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Nombres")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
@@ -408,100 +543,6 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Vehicle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Point>("Location")
-                        .IsRequired()
-                        .HasColumnType("POINT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("Vehicles");
-                });
-
-            modelBuilder.Entity("VehicleLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Point>("Position")
-                        .IsRequired()
-                        .HasColumnType("POINT");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("VehicleLocations");
-                });
-
-            modelBuilder.Entity("EcoPointsAccount", b =>
-                {
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EcoTransaction", b =>
-                {
-                    b.HasOne("EcoPointsAccount", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("IncidentImage", b =>
-                {
-                    b.HasOne("IncidentReport", "Incident")
-                        .WithMany("Images")
-                        .HasForeignKey("IncidentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Incident");
-                });
-
-            modelBuilder.Entity("IncidentReport", b =>
-                {
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", "User")
-                        .WithMany("Reports")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -513,7 +554,7 @@ namespace URBANMOVE_Proyecto.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", null)
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -522,7 +563,7 @@ namespace URBANMOVE_Proyecto.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", null)
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -537,7 +578,7 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", null)
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,78 +587,158 @@ namespace URBANMOVE_Proyecto.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", null)
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RouteStop", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Incidente", b =>
                 {
-                    b.HasOne("Route", "Route")
-                        .WithMany("RouteStops")
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("Schedule", b =>
-                {
-                    b.HasOne("Route", "Route")
-                        .WithMany("RouteSchedules")
-                        .HasForeignKey("RouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Vehicle", "Vehicle")
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("VehicleId")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Route");
-
-                    b.Navigation("Vehicle");
+                    b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Vehicle", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.PuntosLedger", b =>
                 {
-                    b.HasOne("Route", "Route")
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.ComercioAliado", "Comercio")
                         .WithMany()
-                        .HasForeignKey("RouteId");
+                        .HasForeignKey("ComercioId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("VehicleLocation", b =>
-                {
-                    b.HasOne("Vehicle", "Vehicle")
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Ticket", "Ticket")
                         .WithMany()
-                        .HasForeignKey("VehicleId")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", "Usuario")
+                        .WithMany("HistorialPuntos")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Vehicle");
+                    b.Navigation("Comercio");
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("IncidentReport", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Ruta", b =>
                 {
-                    b.Navigation("Images");
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Linea", "Linea")
+                        .WithMany("Rutas")
+                        .HasForeignKey("LineaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Linea");
                 });
 
-            modelBuilder.Entity("Route", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.RutaParada", b =>
                 {
-                    b.Navigation("RouteSchedules");
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Parada", "Parada")
+                        .WithMany("RutaParadas")
+                        .HasForeignKey("ParadaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("RouteStops");
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Ruta", "Ruta")
+                        .WithMany("RutaParadas")
+                        .HasForeignKey("RutaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parada");
+
+                    b.Navigation("Ruta");
                 });
 
-            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.ApplicationUser", b =>
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.SalidaProgramada", b =>
                 {
-                    b.Navigation("Reports");
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Ruta", "Ruta")
+                        .WithMany("Salidas")
+                        .HasForeignKey("RutaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.UnidadTransporte", "UnidadTransporte")
+                        .WithMany("Salidas")
+                        .HasForeignKey("UnidadTransporteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ruta");
+
+                    b.Navigation("UnidadTransporte");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Ticket", b =>
+                {
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", "Operador")
+                        .WithMany()
+                        .HasForeignKey("OperadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.SalidaProgramada", "Salida")
+                        .WithMany()
+                        .HasForeignKey("SalidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.UnidadTransporte", "Unidad")
+                        .WithMany()
+                        .HasForeignKey("UnidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Operador");
+
+                    b.Navigation("Salida");
+
+                    b.Navigation("Unidad");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Linea", b =>
+                {
+                    b.Navigation("Rutas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Parada", b =>
+                {
+                    b.Navigation("RutaParadas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Ruta", b =>
+                {
+                    b.Navigation("RutaParadas");
+
+                    b.Navigation("Salidas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.UnidadTransporte", b =>
+                {
+                    b.Navigation("Salidas");
+                });
+
+            modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.Usuario", b =>
+                {
+                    b.Navigation("HistorialPuntos");
                 });
 #pragma warning restore 612, 618
         }

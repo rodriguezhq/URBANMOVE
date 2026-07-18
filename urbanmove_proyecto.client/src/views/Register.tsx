@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AppButton from "../Components/AppButton";
-import { ChevronLeft, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { ChevronLeft, Eye, EyeOff, IdCard, Lock, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppInput from '../Components/AppInput';
 import Spinner from '../Components/Spinner';
@@ -9,6 +9,7 @@ import { useAuth } from '../Hooks/useAuth';
 function Register() {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [dni, setDni] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,7 +31,7 @@ function Register() {
 
         setSubmitting(true);
         try {
-            const success = await register({ name, lastName, email, password, confirmPassword });
+            const success = await register({ nombres: name, apellidos: lastName, dni, email, password, confirmPassword });
             if (success) {
                 navigate('/app');
             } else {
@@ -80,6 +81,13 @@ function Register() {
                             containerClassName='w-full'
                             value={lastName} onChange={(e) => setLastName(e.target.value)}
                             leading={<User />} />
+                        <AppInput
+                            label="DNI"
+                            appearance='filled'
+                            type="text"
+                            containerClassName='w-full'
+                            value={dni} onChange={(e) => setDni(e.target.value)}
+                            leading={<IdCard />} />
                     </div>
 
                     <AppInput

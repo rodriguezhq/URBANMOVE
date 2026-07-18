@@ -10,6 +10,7 @@ export function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<IndexLayout />}>
+                <Route index element={<Navigate to="/login" />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
             </Route>
