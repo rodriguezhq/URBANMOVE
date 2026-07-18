@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using URBANMOVE_Proyecto.Server.Middlewares;
 using URBANMOVE_Proyecto.Server.Models.Database;
+using URBANMOVE_Proyecto.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/api/auth/login";
         options.LogoutPath = "/api/auth/logout";
     });
+
+// Email
+builder.Services.Configure<EmailOptions>(
+    builder.Configuration.GetSection("Email")
+    );
+builder.Services.AddScoped<EmailService>();
+
+
 
 var app = builder.Build();
 
