@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
 import { useMemo, useState } from 'react';
-import { Bus, HardHat, Home, Layout, LogOut, Menu, SendHorizonal, Star, Ticket, Wallet } from 'lucide-react';
+import { Bus, HardHat, Home, Layout, LogOut, Menu, SendHorizonal, Star, Ticket, User, Wallet } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
 import type { RolType } from '../../Types/authType';
@@ -18,15 +18,18 @@ const Routes = {
         { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
         { url: '/app/saldo', icon: <Wallet size={24} />, name: 'Saldo' },
         { url: '/app/puntos', icon: <Star size={24} />, name: 'Puntos' },
+        { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ],
     operador: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
         { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
         { url: '/app/unidades', icon: <Bus size={24} />, name: 'Unidades' },
+        { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ],
     admin: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
         { url: '/app/operadores', icon: <HardHat size={24} />, name: 'Operadores' },
+        { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ]
 } satisfies Record<RolType, RouteType[]>
 
