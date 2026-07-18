@@ -16,7 +16,12 @@ export function AppRoutes() {
             </Route>
             <Route path="/app/*" element={
                 <ProtectedRoute>
-                    <MainLayout />
+                    <ProtectedRoute.Branch value={['operador', 'admin']}>
+                        <MainLayout />
+                    </ProtectedRoute.Branch>
+                    <ProtectedRoute.Branch value="ciudadano">
+                        <MainLayout />
+                    </ProtectedRoute.Branch>
                 </ProtectedRoute>
             } >
                 <Route path="" element={<Home />} />
