@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
 import { useMemo, useState } from 'react';
-import { Home, Layout, LogOut, Menu } from 'lucide-react';
+import { Bus, HardHat, Home, Layout, LogOut, Menu, SendHorizonal, Star, Ticket, Wallet } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
 import type { RolType } from '../../Types/authType';
@@ -14,23 +14,29 @@ type RouteType = {
 
 const Routes = {
     ciudadano: [
-        { url: '/app/home', icon: <Home size={24} />, name: 'Inicio' },
+        { url: '/app/navegar', icon: <SendHorizonal size={24} />, name: 'Navegar' },
+        { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
+        { url: '/app/saldo', icon: <Wallet size={24} />, name: 'Saldo' },
+        { url: '/app/puntos', icon: <Star size={24} />, name: 'Puntos' },
     ],
     operador: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+        { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
+        { url: '/app/unidades', icon: <Bus size={24} />, name: 'Unidades' },
     ],
     admin: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+        { url: '/app/operadores', icon: <HardHat size={24} />, name: 'Operadores' },
     ]
 } satisfies Record<RolType, RouteType[]>
 
 function MainLayout() {
     const [showSidebar, setShowSidebar] = useState(false);
-    const { user, loading, logout  } = useAuth();
+    const { user, loading, logout } = useAuth();
     const navigate = useNavigate();
 
-    const userRole = useMemo(() => user?.rol || 'ciudadano', [user]);
 
+    const userRole = useMemo(() => user?.role || 'ciudadano', [user]);
     const handleLogout = async () => {
         await logout();
         navigate('/login');

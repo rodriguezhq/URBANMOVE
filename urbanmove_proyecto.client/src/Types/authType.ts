@@ -7,7 +7,7 @@ export interface UserType {
     id: string;
     fullName: string;
     email: string;
-    rol: RolType;
+    role: RolType;
 }
 
 export type RolType = 'ciudadano' | 'operador' | 'admin';
