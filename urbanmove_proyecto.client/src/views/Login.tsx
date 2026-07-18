@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import AppButton from '../Components/AppButton';
 import { useAuth } from '../Hooks/useAuth';
 import { HealthCheckService } from '../services/HealthCheckService';
-import { Bike, Car, ChevronRight, Eye, EyeOff, Leaf, Lock, Mail, Navigation, TrainFront } from 'lucide-react';
+import { ChevronRight, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import AppInput from '../Components/AppInput';
 import Spinner from '../Components/Spinner';
+import AppLink from '../Components/AppLink';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -92,13 +93,16 @@ function Login() {
                             </AppButton>
                         }
                     />
+                    <AppLink appearance="transparent" to="/recover-password" className="self-end -mt-4 p-0 hover:underline" >
+                        Olvidé mi contraseña
+                    </AppLink>
 
                     <AppButton disabled={submitting || loading} type='submit' className='w-full'>
                         {submitting ? <><Spinner /> ingresando...</> : 'Ingresar'}
                     </AppButton>
-                    <AppButton disabled={submitting || loading} type='button' appearance='subtle' onClick={() => navigate('/register')} className='flex items-center justify-start gap-2 w-full'>
+                    <AppLink disabled={submitting || loading} type='button' appearance='subtle' to="/register" className='flex items-center self-start justify-start gap-2'>
                          Registrarse <ChevronRight />
-                    </AppButton>
+                    </AppLink>
 
                     {error && (
                         <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">

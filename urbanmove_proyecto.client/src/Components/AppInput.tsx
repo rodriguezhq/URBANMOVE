@@ -39,12 +39,14 @@ export default function AppInput({ label, type, value, onChange, appearance = 'o
                     AppInnputVariante({
                         appearance,
                     }),
-                    className,
                     leading && "pl-2",
-                    trailing && "pr-2"
+                    trailing && "pr-2",
+                    className
                 )
             }>
-                {leading}
+                <div>
+                    {leading}
+                </div>
                 <input
                     type={type}
                     value={value}
@@ -53,7 +55,9 @@ export default function AppInput({ label, type, value, onChange, appearance = 'o
                     focus:outline-none"
                     {...props}
                 />
-                {trailing}
+                <div>
+                    {trailing}
+                </div>
             </div>
         </label>
     );

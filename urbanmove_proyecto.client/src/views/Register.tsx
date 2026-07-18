@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import AppButton from "../Components/AppButton";
-import { AtSign, ChevronLeft, Eye, EyeOff, IdCard, Lock, Mail, User } from 'lucide-react';
+import { ChevronLeft, Eye, EyeOff, IdCard, Lock, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppInput from '../Components/AppInput';
 import Spinner from '../Components/Spinner';
 import { useAuth } from '../Hooks/useAuth';
 import { isAxiosError } from 'axios';
+import AppLink from "../Components/AppLink";
 
 function Register() {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [dni, setDni] = useState('');
-    const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,7 +33,7 @@ function Register() {
 
         setSubmitting(true);
         try {
-            await register({ nombres: name, apellidos: lastName, dni, userName, email, password, confirmPassword });
+            await register({ nombres: name, apellidos: lastName, dni, email, password, confirmPassword });
             navigate('/app');
         } catch (err) {
             if (isAxiosError(err) && err.response?.data?.message) {
@@ -100,15 +100,6 @@ function Register() {
                             containerClassName='w-full'
                             value={email} onChange={(e) => setEmail(e.target.value)}
                             leading={<Mail />} />
-
-                        <AppInput
-                            label="Nombre de usuario"
-                            appearance='filled'
-                            type="text"
-                            containerClassName='w-full'
-                            value={userName} onChange={(e) => setUserName(e.target.value)}
-                            required
-                            leading={<AtSign />} />
                     </div>
 
                     <AppInput
@@ -154,9 +145,9 @@ function Register() {
                     <AppButton disabled={submitting || loading} type='submit' className='w-full'>
                         {submitting ? <><Spinner /> registrando...</> : 'Registrarse'}
                     </AppButton>
-                    <AppButton disabled={submitting || loading} type='button' appearance='subtle' onClick={() => navigate('/login')} className='flex items-center justify-start gap-2 w-full'>
+                    <AppLink disabled={submitting || loading} type='button' appearance='subtle' to="/login" className='flex items-center justify-start gap-2'>
                         <ChevronLeft /> Iniciar sesión
-                    </AppButton>
+                    </AppLink>
 
                     {error && (
                         <div className="rounded-md border border-red-700 bg-red-50 px-3 py-2">

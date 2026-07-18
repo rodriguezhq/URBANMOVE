@@ -1,8 +1,9 @@
 import { cva } from 'class-variance-authority';
 import type { Appearance } from '../Types/styleTypes';
 import { twMerge } from 'tailwind-merge';
+import type { ButtonHTMLAttributes } from 'react';
 
-interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface AuthButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     appearance?: Appearance
 }
 
@@ -22,7 +23,7 @@ const buttonVariants = cva(
 
 
 
-function AppButton({ children, disabled, type = 'button',className, ...props }: AuthButtonProps) {
+export default function AppButton({ children, disabled, type = 'button', className, ...props }: AuthButtonProps) {
     return (
         <button
             type={type}
@@ -41,5 +42,3 @@ function AppButton({ children, disabled, type = 'button',className, ...props }: 
         </button>
     );
 }
-
-export default AppButton;

@@ -5,6 +5,7 @@ import ProtectedRoute from '../Components/ProtectedRoute';
 import Home from '../views/Home';
 import IndexLayout from '../Components/shared/IndexLayout';
 import Register from '../views/Register';
+import RecoverPasswordView from '../views/RecoverPasswordView';
 
 export function AppRoutes() {
     return (
@@ -13,6 +14,7 @@ export function AppRoutes() {
                 <Route index element={<Navigate to="/login" />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
+                <Route path="recover-password" element={<RecoverPasswordView />} />
             </Route>
             <Route path="/app/*" element={
                 <ProtectedRoute>

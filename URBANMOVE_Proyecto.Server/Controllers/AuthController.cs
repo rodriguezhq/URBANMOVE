@@ -57,12 +57,6 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
             };
 
-            await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties
-                  );
-
             return Ok(new LoginResponse
             {
                 Id = user.Id,
@@ -112,30 +106,27 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 return BadRequest(new {message = "El correo ya está registrado"});
             }
 
-            var existingUserName = await _userManager.FindByNameAsync(request.UserName);
-            if(existingUserName != null){
-                return BadRequest(new {message = "Ese nombre de usuario ya está en uso, elige otro"});
-            }
-
             var existingDni = await _userManager.Users.AnyAsync(u => u.DNI == request.DNI);
             if(existingDni){
                 return BadRequest(new {message = "Ese DNI ya está registrado"});
             }
 
             var user = new Usuario{
-                UserName = request.UserName,
                 Email = request.Email,
                 Nombres = request.Nombres,
                 Apellidos = request.Apellidos,
                 DNI = request.DNI,
             };
+
             var result = await _userManager.CreateAsync(user, request.Password);
+
             if(!result.Succeeded){
                 var errors = string.Join(",",result.Errors.Select(e => e.Description));
                 return BadRequest(new {message = errors});
             }
 
             await _userManager.AddToRoleAsync(user, Roles.Ciudadano);
+
             await _signInManager.SignInAsync(user, isPersistent: false);
 
             return Ok(new LoginResponse{
