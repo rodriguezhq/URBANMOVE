@@ -159,7 +159,7 @@ export default function IncidentesView() {
                     </div>
 
                     <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-wide text-blue-950">
-                        Foto (opcional)
+                        Foto 
                         <div className="flex items-center gap-3 border border-gray-300 bg-white p-2.5">
                             <Camera size={18} className="text-gray-400" />
                             <input
