@@ -189,7 +189,7 @@ export default function IncidentesView() {
 
                     <AppButton
                         type="submit"
-                        disabled={enviando || !ubicacion || descripcion.length < 10}
+                        disabled={enviando || !ubicacion || descripcion.length < 5}
                         className="flex items-center justify-center gap-2"
                     >
                         {enviando && <Spinner size={16} />}
