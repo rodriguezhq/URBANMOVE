@@ -57,6 +57,8 @@ builder.Services.AddScoped<EmailService>();
 // Servicios de dominio
 builder.Services.AddScoped<NavegacionService>();
 
+builder.Services.AddScoped<IncidentesService>();
+
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("ciudadano", cfg =>
@@ -99,6 +101,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
