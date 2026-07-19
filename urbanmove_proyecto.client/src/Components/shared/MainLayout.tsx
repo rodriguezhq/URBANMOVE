@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
 import { useMemo, useState } from 'react';
-import { Bus, HardHat, Home, Layout, LogOut, Menu, SendHorizonal, Star, Ticket, User, Wallet } from 'lucide-react';
+import { AlertTriangle, Bus, HardHat, Home, Layout, LogOut, Menu, SendHorizonal, Star, Ticket, User, Wallet } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
 import type { RolType } from '../../Types/authType';
@@ -16,6 +16,7 @@ const Routes = {
     ciudadano: [
         { url: '/app/navegar', icon: <SendHorizonal size={24} />, name: 'Navegar' },
         { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
+        { url: '/app/incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
         { url: '/app/saldo', icon: <Wallet size={24} />, name: 'Saldo' },
         { url: '/app/puntos', icon: <Star size={24} />, name: 'Puntos' },
         { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },

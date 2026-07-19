@@ -8,6 +8,8 @@
 *.db-shm
 *.db-wal
 
+URBANMOVE_Proyecto.Server/wwwroot/uploads/
+
 # User-specific files
 *.rsuser
 *.suo

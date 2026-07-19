@@ -107,7 +107,7 @@ namespace URBANMOVE_Proyecto.Server.Services
             await using var stream = new FileStream(rutaCompleta, FileMode.Create);
             await imagen.CopyToAsync(stream);
 
-            return $"/uploads/incidentes/{nombreArchivo}";
+            return $"/api/uploads/incidentes/{nombreArchivo}";
         }
 
         private static IncidenteResponseDto MapToDto(Incidente i, Usuario usuario) => new()
