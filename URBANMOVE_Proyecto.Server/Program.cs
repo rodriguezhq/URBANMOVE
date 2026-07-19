@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Threading.RateLimiting;
 using URBANMOVE_Proyecto.Server.Middlewares;
 using URBANMOVE_Proyecto.Server.Models.Database;
 using URBANMOVE_Proyecto.Server.Services;
@@ -52,6 +54,34 @@ builder.Services.Configure<EmailOptions>(
     );
 builder.Services.AddScoped<EmailService>();
 
+// Servicios de dominio
+builder.Services.AddScoped<NavegacionService>();
+
+// Rate limiting (RNF-02 escalabilidad / RNF-03 seguridad)
+// Política para ciudadanos autenticados: 60 req/min
+// Política anónima: 20 req/min (protege endpoints públicos restantes)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("ciudadano", cfg =>
+    {
+        cfg.Window = TimeSpan.FromMinutes(1);
+        cfg.PermitLimit = 60;
+        cfg.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        cfg.QueueLimit = 10;
+    });
+
+    options.AddFixedWindowLimiter("anonimo", cfg =>
+    {
+        cfg.Window = TimeSpan.FromMinutes(1);
+        cfg.PermitLimit = 20;
+        cfg.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        cfg.QueueLimit = 5;
+    });
+
+    // Respuesta 429 cuando se supera el límite
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 
 
 var app = builder.Build();
@@ -80,6 +110,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Rate limiting middleware
+app.UseRateLimiter();
 
 app.MapControllers();
 

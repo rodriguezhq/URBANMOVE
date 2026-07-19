@@ -6,6 +6,7 @@ import Home from '../views/Home';
 import IndexLayout from '../Components/shared/IndexLayout';
 import Register from '../views/Register';
 import RecoverPasswordView from '../views/RecoverPasswordView';
+import NavegarView from '../views/NavegarView';
 
 export function AppRoutes() {
     return (
@@ -27,6 +28,7 @@ export function AppRoutes() {
                 </ProtectedRoute>
             } >
                 <Route path="" element={<Home />} />
+                <Route path="navegar" element={<NavegarView />} />
             </Route>
         </Routes>
     )
