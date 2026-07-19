@@ -7,6 +7,7 @@ import IndexLayout from '../Components/shared/IndexLayout';
 import Register from '../views/Register';
 import RecoverPasswordView from '../views/RecoverPasswordView';
 import NavegarView from '../views/NavegarView';
+import ResetPasswordView from '../views/ResetPasswordView';
 
 export function AppRoutes() {
     return (
@@ -16,6 +17,7 @@ export function AppRoutes() {
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route path="recover-password" element={<RecoverPasswordView />} />
+                <Route path='reset-password' element={<ResetPasswordView />} />
             </Route>
             <Route path="/app/*" element={
                 <ProtectedRoute>

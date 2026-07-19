@@ -1,4 +1,7 @@
 {
+  "General": {
+    "FrontendUrl": "https://localhost:58010"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",

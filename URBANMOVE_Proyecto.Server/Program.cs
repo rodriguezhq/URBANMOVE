@@ -57,9 +57,6 @@ builder.Services.AddScoped<EmailService>();
 // Servicios de dominio
 builder.Services.AddScoped<NavegacionService>();
 
-// Rate limiting (RNF-02 escalabilidad / RNF-03 seguridad)
-// Política para ciudadanos autenticados: 60 req/min
-// Política anónima: 20 req/min (protege endpoints públicos restantes)
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("ciudadano", cfg =>
@@ -78,10 +75,14 @@ builder.Services.AddRateLimiter(options =>
         cfg.QueueLimit = 5;
     });
 
-    // Respuesta 429 cuando se supera el límite
+    // Supera limites de peticiones
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
+// frontend
+builder.Services.Configure<GeneralSettings>(
+    builder.Configuration.GetSection("General")
+);
 
 
 var app = builder.Build();
