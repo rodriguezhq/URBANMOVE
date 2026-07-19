@@ -1,40 +1,16 @@
-import { useState } from 'react';
-import { AlertTriangle, Camera, CheckCircle2, Clock, MapPin, Search } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { AlertTriangle, Camera, MapPin } from 'lucide-react';
 import AppButton from '../Components/AppButton';
 import Spinner from '../Components/Spinner';
+import EstadoBadge from '../Components/IncidentesComponents/EstadoBadge';
 import { useIncidentes } from '../Hooks/useIncidentes';
-import type { CategoriaIncidente, EstadoIncidente } from '../Types/incidentesTypes';
+import type { CategoriaIncidente } from '../Types/incidentesTypes';
 
 const categorias: { value: CategoriaIncidente; label: string }[] = [
     { value: 'Accidente', label: 'Accidente' },
     { value: 'Congestion', label: 'Congestión' },
     { value: 'Vandalismo', label: 'Vandalismo' },
 ];
-
-function EstadoBadge({ estado }: { estado: EstadoIncidente }) {
-    if (estado === 'Pendiente') {
-        return (
-            <span className="inline-flex items-center gap-1 border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-amber-700">
-                <Clock size={12} />
-                Pendiente
-            </span>
-        );
-    }
-    if (estado === 'EnRevision') {
-        return (
-            <span className="inline-flex items-center gap-1 border border-blue-300 bg-blue-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-blue-700">
-                <Search size={12} />
-                En revisión
-            </span>
-        );
-    }
-    return (
-        <span className="inline-flex items-center gap-1 border border-green-300 bg-green-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-green-700">
-            <CheckCircle2 size={12} />
-            Resuelto
-        </span>
-    );
-}
 
 export default function IncidentesView() {
     const {
@@ -56,15 +32,34 @@ export default function IncidentesView() {
     const [imagen, setImagen] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const imagenInputRef = useRef<HTMLInputElement>(null);
+
     const handleUbicacion = async () => {
         const resultado = await obtenerUbicacionActual();
         if (resultado) setUbicacion(resultado);
+    };
+
+    const handleDescripcionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setDescripcion(e.target.value);
+        e.target.style.height = 'auto';
+        e.target.style.height = `${e.target.scrollHeight}px`;
     };
 
     const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const archivo = e.target.files?.[0] ?? null;
         setImagen(archivo);
         setPreviewUrl(archivo ? URL.createObjectURL(archivo) : null);
+    };
+
+    const limpiarFormulario = () => {
+        setDescripcion('');
+        setCategoria('Accidente');
+        setUbicacion(null);
+        setImagen(null);
+        setPreviewUrl(null);
+        if (imagenInputRef.current) imagenInputRef.current.value = '';
+        if (textareaRef.current) textareaRef.current.style.height = 'auto';
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -79,13 +74,7 @@ export default function IncidentesView() {
             imagen,
         });
 
-        if (exito) {
-            setDescripcion('');
-            setCategoria('Accidente');
-            setUbicacion(null);
-            setImagen(null);
-            setPreviewUrl(null);
-        }
+        if (exito) limpiarFormulario();
     };
 
     return (
@@ -112,14 +101,15 @@ export default function IncidentesView() {
                     <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-wide text-blue-950">
                         Descripción
                         <textarea
+                            ref={textareaRef}
                             value={descripcion}
-                            onChange={(e) => setDescripcion(e.target.value)}
+                            onChange={handleDescripcionChange}
                             required
-                            minLength={5}
+                            minLength={10}
                             maxLength={300}
                             rows={4}
-                            className="resize-none border border-gray-300 bg-white p-2.5 text-sm font-normal text-blue-950 focus:outline-none"
-                            placeholder="Describe el incidente"
+                            className="resize-none overflow-hidden border border-gray-300 bg-white p-2.5 text-sm font-normal text-blue-950 focus:outline-none"
+                            placeholder="Describe lo que pasó"
                         />
                     </label>
 
@@ -159,10 +149,11 @@ export default function IncidentesView() {
                     </div>
 
                     <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-wide text-blue-950">
-                        Foto 
+                        Foto
                         <div className="flex items-center gap-3 border border-gray-300 bg-white p-2.5">
                             <Camera size={18} className="text-gray-400" />
                             <input
+                                ref={imagenInputRef}
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
                                 onChange={handleImagenChange}
@@ -189,7 +180,7 @@ export default function IncidentesView() {
 
                     <AppButton
                         type="submit"
-                        disabled={enviando || !ubicacion || descripcion.length < 5}
+                        disabled={enviando || !ubicacion || descripcion.length < 10}
                         className="flex items-center justify-center gap-2"
                     >
                         {enviando && <Spinner size={16} />}

@@ -9,6 +9,7 @@ import RecoverPasswordView from '../views/RecoverPasswordView';
 import NavegarView from '../views/NavegarView';
 import IncidentesView from '../views/IncidentesView';
 import ResetPasswordView from '../views/ResetPasswordView';
+import GestionIncidentesView from '../views/GestionIncidentesView';
 
 export function AppRoutes() {
     return (
@@ -33,6 +34,7 @@ export function AppRoutes() {
                 <Route path="" element={<Home />} />
                 <Route path="navegar" element={<NavegarView />} />
                 <Route path="incidentes" element={<IncidentesView />} />
+                <Route path="gestion-incidentes" element={<GestionIncidentesView />} />
             </Route>
         </Routes>
     )

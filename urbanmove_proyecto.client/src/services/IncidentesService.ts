@@ -31,4 +31,8 @@ export const IncidentesService = {
     actualizarEstado: async (id: number, estado: EstadoIncidente): Promise<void> => {
         await ApiClient.patch(`/incidentes/${id}/estado`, { estado });
     },
+
+    eliminar: async (id: number): Promise<void> => {
+        await ApiClient.delete(`/incidentes/${id}`);
+    },
 };

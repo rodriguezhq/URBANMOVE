@@ -89,14 +89,27 @@ namespace URBANMOVE_Proyecto.Server.Services
             return true;
         }
 
+        public async Task<bool> EliminarAsync(int id)
+        {
+            var incidente = await _db.Incidentes.FindAsync(id);
+            if (incidente is null) return false;
+
+            if (!string.IsNullOrEmpty(incidente.ImagenUrl))
+                EliminarImagenDelDisco(incidente.ImagenUrl);
+
+            _db.Incidentes.Remove(incidente);
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
         private async Task<string> GuardarImagenAsync(IFormFile imagen)
         {
             var ext = Path.GetExtension(imagen.FileName).ToLowerInvariant();
             if (!ExtensionesPermitidas.Contains(ext))
-                throw new InvalidOperationException("Formato de imagen no permitido , solo se acepta JPG, PNG o WEBP");
+                throw new InvalidOperationException("Formato de imagen no permitido solo usa JPG, PNG o WEBP.");
 
             if (imagen.Length > TamanioMaximoBytes)
-                throw new InvalidOperationException("La imagen supera el tamaño , el máximo es de 5MB");
+                throw new InvalidOperationException("La imagen supera el tamaño máximo permitido es de 5MB.");
 
             var carpeta = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", "incidentes");
             Directory.CreateDirectory(carpeta);
@@ -108,6 +121,14 @@ namespace URBANMOVE_Proyecto.Server.Services
             await imagen.CopyToAsync(stream);
 
             return $"/api/uploads/incidentes/{nombreArchivo}";
+        }
+
+        private void EliminarImagenDelDisco(string imagenUrl)
+        {
+            var nombreArchivo = Path.GetFileName(imagenUrl);
+            var ruta = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", "incidentes", nombreArchivo);
+            if (File.Exists(ruta))
+                File.Delete(ruta);
         }
 
         private static IncidenteResponseDto MapToDto(Incidente i, Usuario usuario) => new()

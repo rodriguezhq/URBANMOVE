@@ -23,12 +23,14 @@ const Routes = {
     ],
     operador: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+        { url: '/app/gestion-incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
         { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
         { url: '/app/unidades', icon: <Bus size={24} />, name: 'Unidades' },
         { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ],
     admin: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+         { url: '/app/gestion-incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
         { url: '/app/operadores', icon: <HardHat size={24} />, name: 'Operadores' },
         { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ]

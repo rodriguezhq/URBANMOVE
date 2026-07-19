@@ -59,7 +59,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
         {
             var incidente = await _incidentes.ObtenerDetalleAsync(id, UsuarioId, Rol);
             if (incidente is null)
-                return NotFound(new { message = $"Incidente con id {id} no encontrado." });
+                return NotFound(new { message = $"Incidente con Id {id} no encontrado." });
 
             return Ok(incidente);
         }
@@ -74,9 +74,24 @@ namespace URBANMOVE_Proyecto.Server.Controllers
         {
             var actualizado = await _incidentes.ActualizarEstadoAsync(id, request.Estado);
             if (!actualizado)
-                return NotFound(new { message = $"Incidente con id {id} no encontrado." });
+                return NotFound(new { message = $"Incidente con Id {id} no encontrado." });
 
-            return Ok(new { message = "Estado actualizado" });
+            return Ok(new { message = "Estado actualizado correctamente" });
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "admin,operador")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var eliminado = await _incidentes.EliminarAsync(id);
+            if (!eliminado)
+                return NotFound(new { message = $"Incidente con Id {id} no encontrado." });
+
+            return Ok(new { message = "Incidente eliminado correctamente" });
         }
     }
 }
