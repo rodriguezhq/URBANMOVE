@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using URBANMOVE_Proyecto.Server.Models.Database;
+using URBANMOVE_Proyecto.Server.Models.DTO;
 
 namespace URBANMOVE_Proyecto.Server.Services
 {
@@ -38,5 +39,26 @@ namespace URBANMOVE_Proyecto.Server.Services
             await _db.SaveChangesAsync();
             return codigo;
         }
+        public async Task<List<TicketResumenDTO>> ObtenerMisTicketsAsync(string usuarioId)
+        {
+            return await _db.Tickets
+                .Include(t => t.Salida)
+                    .ThenInclude(s => s.Ruta)
+                .Include(t => t.Unidad)
+                .Where(t => t.UsuarioId == usuarioId)
+                .OrderByDescending(t => t.FechaReserva)
+                .Select(t => new TicketResumenDTO
+                {
+                    Id = t.Id,
+                    Codigo = t.Codigo,
+                    Estado = t.Estado.ToString(),
+                    FechaReserva = t.FechaReserva,
+                    FechaHoraSalida = t.Salida.FechaHoraSalida,
+                    RutaNombre = t.Salida.Ruta.Nombre,
+                    PlacaUnidad = t.Unidad.Placa
+                })
+                .ToListAsync();
+        }
+
     }
 }

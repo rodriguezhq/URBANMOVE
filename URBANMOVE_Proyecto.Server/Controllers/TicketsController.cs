@@ -30,5 +30,23 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 return BadRequest(new { mensaje = ex.Message });
             }
         }
+        [Authorize(Roles = "ciudadano")]
+        [HttpGet("mis_tickets")]
+        public async Task<IActionResult> ObtenerMisTickets()
+        {
+            try
+            {
+                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (usuarioId == null) return Unauthorized();
+
+                var tickets = await _ticketsService.ObtenerMisTicketsAsync(usuarioId);
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
     }
 }

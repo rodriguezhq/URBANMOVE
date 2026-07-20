@@ -14,6 +14,7 @@ import DashboardView from '../views/DashboardView';
 import FidelizacionView from '../views/FidelizacionView';
 import EmailVerificationScreen from '../services/EmailVerificationScreen';
 import GestionComerciosView from '../views/GestionComerciosView';
+import TicketsView from '../views/TicketsView';
 
 export function AppRoutes() {
     return (
@@ -39,6 +40,7 @@ export function AppRoutes() {
                 <Route path="" element={<Home />} />
                 <Route path="dashboard" element={<DashboardView />} />
                 <Route path="navegar" element={<NavegarView />} />
+                <Route path="tickets" element={<TicketsView />} />
                 <Route path="incidentes" element={<IncidentesView />} />
                 <Route path="gestion-incidentes" element={<GestionIncidentesView />} />
                 <Route path="puntos" element={<FidelizacionView />} />
