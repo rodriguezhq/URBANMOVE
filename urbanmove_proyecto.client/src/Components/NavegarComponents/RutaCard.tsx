@@ -1,20 +1,17 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, MapPin, Tag } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, Tag, Map } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import type { RutaResumenDto } from '../../Types/navegacionTypes';
 import SalidaBadge from './SalidaBadge';
+import AppButton from '../AppButton';
 
 interface RutaCardProps {
     ruta: RutaResumenDto;
+    onVermapa?: (ruta: RutaResumenDto) => void;
+    onReservar?: (salidaId: number) => void;
 }
 
-/**
- * Tarjeta que muestra el resumen de una ruta con:
- * - Nombre e indicador de línea
- * - Lista de paradas en orden (colapsable)
- * - Grid de salidas con sus badges de estado/ocupación
- */
-export default function RutaCard({ ruta }: RutaCardProps) {
+export default function RutaCard({ ruta, onVermapa, onReservar }: RutaCardProps) {
     const [expandidaParadas, setExpandidaParadas] = useState(false);
 
     const primeraParada = ruta.paradas.at(0)?.parada.nombre ?? '—';
@@ -110,11 +107,23 @@ export default function RutaCard({ ruta }: RutaCardProps) {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {ruta.salidas.map(salida => (
-                                <SalidaBadge key={salida.id} salida={salida} />
+                                <SalidaBadge key={salida.id} salida={salida} onReservar={onReservar} />
                             ))}
                         </div>
                     )}
                 </section>
+
+                {/* Acción: Ver mapa */}
+                <div className="pt-2 border-t border-gray-100 mt-2">
+                    <AppButton
+                        appearance="outline"
+                        className="w-full flex justify-center border-violet-200 text-violet-700 hover:bg-violet-50 hover:text-violet-800 gap-2"
+                        onClick={() => onVermapa && onVermapa(ruta)}
+                    >
+                        <Map />
+                        Ver trazo en mapa
+                    </AppButton>
+                </div>
             </div>
         </article>
     );

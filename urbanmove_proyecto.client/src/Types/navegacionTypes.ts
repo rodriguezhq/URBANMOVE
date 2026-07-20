@@ -43,6 +43,10 @@ export interface ResultadoPaginadoDto<T> {
     totalPaginas: number;
     datos: T[];
 }
+export interface ReservarAsientoResponse {
+    mensaje: string;
+    codigo: string;
+}
 
 // ─── Filtros de búsqueda (refleja BusquedaRutasRequest del backend) ───────────
 

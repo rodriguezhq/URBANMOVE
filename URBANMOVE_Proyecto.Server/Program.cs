@@ -1,9 +1,9 @@
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using System.Threading.RateLimiting;
 using URBANMOVE_Proyecto.Server.Middlewares;
 using URBANMOVE_Proyecto.Server.Models.Database;
 using URBANMOVE_Proyecto.Server.Services;
@@ -71,6 +71,7 @@ builder.Services.AddHttpClient<RoutingService>((sp, client) =>
 
 // Servicios de dominio
 builder.Services.AddScoped<NavegacionService>();
+builder.Services.AddScoped<TicketsService>();
 
 builder.Services.AddScoped<IncidentesService>();
 

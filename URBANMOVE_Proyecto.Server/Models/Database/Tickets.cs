@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace URBANMOVE_Proyecto.Server.Models.Database
 {
@@ -33,25 +33,25 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
         [ForeignKey(nameof(Usuario))]
         public required string UsuarioId { get; set; }
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public required Usuario Usuario { get; set; }
+        public Usuario Usuario { get; set; } = null!;
 
 
         [ForeignKey(nameof(Salida))]
         public required int SalidaId { get; set; }
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public required SalidaProgramada Salida { get; set; }
+        public SalidaProgramada Salida { get; set; } = null!;
 
 
         [ForeignKey(nameof(Unidad))]
         public required int UnidadId { get; set; }
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public required UnidadTransporte Unidad { get; set; }
+        public UnidadTransporte Unidad { get; set; } = null!;
 
 
         [ForeignKey(nameof(Operador))]
-        public required string OperadorId { get; set; }
+        public string? OperadorId { get; set; }
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public required Usuario Operador { get; set; }
+        public Usuario? Operador { get; set; }
 
     }
 

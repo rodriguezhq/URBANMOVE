@@ -1,0 +1,42 @@
+using Microsoft.EntityFrameworkCore;
+using URBANMOVE_Proyecto.Server.Models.Database;
+
+namespace URBANMOVE_Proyecto.Server.Services
+{
+    public class TicketsService
+    {
+        private readonly AppDbContext _db;
+        public TicketsService(AppDbContext db)
+        {
+            _db = db;
+        }
+        public async Task<string> ReservarTicketAsync(string usuarioId, int salidaId)
+        {
+            var salida = await _db.SalidasProgramadas
+                .Include(s => s.UnidadTransporte)
+                .FirstOrDefaultAsync(s => s.Id == salidaId);
+            if (salida == null || salida.Estado != EstadioSalida.Programada)
+                throw new Exception("Salida no disponible para reserva.");
+            // Contar cuántos tickets ya existen para esta salida
+            var ticketsOcupados = await _db.Tickets
+                .CountAsync(t => t.SalidaId == salidaId && (t.Estado == EstadoTicket.Reservado || t.Estado == EstadoTicket.Validado));
+            if (ticketsOcupados >= salida.UnidadTransporte.Capacidad)
+                throw new Exception("Ya no hay asientos disponibles en esta salida.");
+            // Generar código único para el QR
+            var codigo = $"TKT-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+            var ticket = new Ticket
+            {
+                Codigo = codigo,
+                Estado = EstadoTicket.Reservado,
+                FechaReserva = DateTime.UtcNow,
+                UsuarioId = usuarioId,
+                SalidaId = salidaId,
+                UnidadId = salida.UnidadTransporteId,
+                OperadorId = null // Queda nulo hasta que el chofer lo valide
+            };
+            _db.Tickets.Add(ticket);
+            await _db.SaveChangesAsync();
+            return codigo;
+        }
+    }
+}

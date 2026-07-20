@@ -68,7 +68,7 @@ Al modificar cualquier definición de la base de datos es necesario crear una mi
 
 
 ```bash
-dotnet ef migration add <nombre del a migración>
+dotnet ef migrations add <nombre del a migración>
 
 ```
 

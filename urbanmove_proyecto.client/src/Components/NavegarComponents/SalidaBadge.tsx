@@ -4,6 +4,7 @@ import { Car, Clock, Users } from 'lucide-react';
 
 interface SalidaBadgeProps {
     salida: SalidaDto;
+    onReservar?: (salidaId: number) => void;
 }
 
 const ESTADO_ESTILOS: Record<SalidaDto['estado'], string> = {
@@ -28,20 +29,18 @@ function formatHora(iso: string): string {
     });
 }
 
-/**
- * Tarjeta compacta que muestra el detalle de una salida programada:
- * hora, estado, placa, ocupación y asientos disponibles.
- */
-export default function SalidaBadge({ salida }: SalidaBadgeProps) {
+export default function SalidaBadge({ salida, onReservar }: SalidaBadgeProps) {
     const porcentajeOcupacion =
         salida.capacidadTotal > 0
             ? Math.round((salida.asientosOcupados / salida.capacidadTotal) * 100)
             : 0;
-
+    const puedeReservar = salida.estado === 'Programada' && salida.asientosDisponibles > 0;
     return (
         <div
+            onClick={() => puedeReservar && onReservar && onReservar(salida.id)}
             className={twMerge(
-                'flex flex-col gap-2 rounded-none border p-3 text-xs transition-shadow hover:shadow-sm',
+                'flex flex-col gap-2 rounded-none border p-3 text-xs transition-all',
+                puedeReservar && onReservar ? 'cursor-pointer hover:scale-[1.02] hover:ring-2 hover:ring-violet-400' : '',
                 ESTADO_ESTILOS[salida.estado]
             )}
         >

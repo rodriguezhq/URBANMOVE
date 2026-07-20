@@ -3,6 +3,7 @@ import type {
     FiltrosBusqueda,
     LineaDto,
     ParadaDto,
+    ReservarAsientoResponse,
     ResultadoPaginadoDto,
     RutaResumenDto,
 } from '../Types/navegacionTypes';
@@ -45,4 +46,8 @@ export const NavegacionService = {
         });
         return response.data;
     },
+    async reservarAsiento(salidaId: number): Promise<ReservarAsientoResponse> {
+        const response = await ApiClient.post(`/tickets/reservar/${salidaId}`);
+        return response.data;
+    }
 };
