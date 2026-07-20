@@ -6,7 +6,7 @@
 - 
 - 
 - 
-- 
+- Poves Martinez Alessandro Piero
 - 
 
 # Requerimientos

@@ -10,6 +10,7 @@ import NavegarView from '../views/NavegarView';
 import IncidentesView from '../views/IncidentesView';
 import ResetPasswordView from '../views/ResetPasswordView';
 import GestionIncidentesView from '../views/GestionIncidentesView';
+import DashboardView from '../views/DashboardView';
 
 export function AppRoutes() {
     return (
@@ -32,6 +33,7 @@ export function AppRoutes() {
                 </ProtectedRoute>
             } >
                 <Route path="" element={<Home />} />
+                <Route path="dashboard" element={<DashboardView />} />
                 <Route path="navegar" element={<NavegarView />} />
                 <Route path="incidentes" element={<IncidentesView />} />
                 <Route path="gestion-incidentes" element={<GestionIncidentesView />} />

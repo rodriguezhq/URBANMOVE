@@ -63,6 +63,8 @@ builder.Services.AddScoped<NavegacionService>();
 
 builder.Services.AddScoped<IncidentesService>();
 
+builder.Services.AddScoped<DashboardService>();
+
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("ciudadano", cfg =>
