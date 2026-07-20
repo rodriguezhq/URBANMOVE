@@ -12,6 +12,7 @@ import ResetPasswordView from '../views/ResetPasswordView';
 import GestionIncidentesView from '../views/GestionIncidentesView';
 import DashboardView from '../views/DashboardView';
 import FidelizacionView from '../views/FidelizacionView';
+import EmailVerificationScreen from '../services/EmailVerificationScreen';
 
 export function AppRoutes() {
     return (
@@ -22,6 +23,7 @@ export function AppRoutes() {
                 <Route path="register" element={<Register />} />
                 <Route path="recover-password" element={<RecoverPasswordView />} />
                 <Route path='reset-password' element={<ResetPasswordView />} />
+                <Route path='verify-email' element={<EmailVerificationScreen />} />
             </Route>
             <Route path="/app/*" element={
                 <ProtectedRoute>

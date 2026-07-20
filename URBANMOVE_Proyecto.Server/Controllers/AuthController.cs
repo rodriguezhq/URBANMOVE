@@ -69,7 +69,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = roles.FirstOrDefault() ?? Roles.Ciudadano,
-                Message = "Inicio de sesión exitoso"
+                Message = "Inicio de sesión exitoso",
+                VerifiedEmail = user.EmailConfirmed
             });
         }
 
@@ -92,12 +93,16 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var role = User.FindFirstValue(ClaimTypes.Role);
 
+            var user = _userManager.FindByIdAsync(userId).Result;
+            var verifiedEmail = user?.EmailConfirmed ?? false;
+
             return Ok(new MeResponse
             {
                 Id = userId ?? "",
                 FullName = fullName ?? "",
                 Email = email ?? "",
-                Role = role ?? ""
+                Role = role ?? "",
+                VerifiedEmail = verifiedEmail
             });
         }
 
@@ -148,6 +153,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = Roles.Ciudadano,
+                VerifiedEmail = user.EmailConfirmed,
                 Message = "Registro exitoso"
             });
         }
@@ -196,5 +202,45 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
             return Ok(new { message = "Contraseña restablecida exitosamente" });
         }
+
+        [HttpPost("send-verification-email")]
+        public async Task<IActionResult> SendVerifyEmail([FromBody] SendPasswordResetRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "El correo no está registrado" });
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            await _emailService.SendAsync(
+                request.Email,
+                "Verificar correo electrónico",
+                $"<p>Para verificar tu correo electrónico, haz clic en el siguiente enlace:</p><p><a href='{_generalSettings.Value.FrontendUrl}/verify-email?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(request.Email)}'>Verificar correo electrónico</a></p>"
+            );
+
+            return Ok(new { message = "Se ha enviado un correo para verificar tu dirección de correo electrónico" });
+        }
+
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "Solicitud inválida" });
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, request.Token);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Token inválido" });
+            }
+
+            return Ok(new { message = "Correo electrónico verificado exitosamente" });
+        }
+
+
     }
 }

@@ -13,6 +13,7 @@
         public required string FullName { get; set; }
         public required string Email { get; set; }
         public required string Role { get; set; }
+        public required bool VerifiedEmail { get; set; }
     }
 
     public class LoginResponse : MeResponse
@@ -43,6 +44,11 @@
         public required string Token { get; set; }
         public required string NewPassword { get; set; }
         public required string ConfirmPassword { get; set; }
+    }
+    public sealed class VerifyEmailRequest
+    {
+        public required string Email { get; set; }
+        public required string Token { get; set; }
     }
 
 }

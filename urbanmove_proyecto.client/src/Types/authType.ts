@@ -8,6 +8,7 @@ export interface UserType {
     fullName: string;
     email: string;
     role: RolType;
+    verifiedEmail: boolean;
 }
 
 export type RolType = 'ciudadano' | 'operador' | 'admin';

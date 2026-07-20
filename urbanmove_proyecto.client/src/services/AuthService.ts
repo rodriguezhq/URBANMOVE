@@ -32,6 +32,13 @@ export const AuthService = {
   sendResetPassword: async (email: string , token: string, newPassword: string, confirmPassword: string): Promise<void> => {
     const response = await ApiClient.post("/auth/reset-password", { email, token, newPassword, confirmPassword });
     return response.data;
+  },
+  sendVerificationEmail: async (email: string): Promise<void> => {
+    const response = await ApiClient.post("/auth/send-verification-email", { email });
+    return response.data;
+  },
+  sendConfirmEmail: async (email: string, token: string): Promise<void> => {
+    const response = await ApiClient.post("/auth/verify-email", { email, token });
+    return response.data;
   }
-
 };
