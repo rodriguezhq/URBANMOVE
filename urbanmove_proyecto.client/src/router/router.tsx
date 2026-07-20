@@ -11,6 +11,7 @@ import IncidentesView from '../views/IncidentesView';
 import ResetPasswordView from '../views/ResetPasswordView';
 import GestionIncidentesView from '../views/GestionIncidentesView';
 import DashboardView from '../views/DashboardView';
+import FidelizacionView from '../views/FidelizacionView';
 
 export function AppRoutes() {
     return (
@@ -37,6 +38,7 @@ export function AppRoutes() {
                 <Route path="navegar" element={<NavegarView />} />
                 <Route path="incidentes" element={<IncidentesView />} />
                 <Route path="gestion-incidentes" element={<GestionIncidentesView />} />
+                <Route path="puntos" element={<FidelizacionView />} />
             </Route>
         </Routes>
     )

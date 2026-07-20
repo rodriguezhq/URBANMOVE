@@ -71,7 +71,69 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
 
             // ── Seed RF-02: siempre verifica si faltan datos de navegación ────────
             await SeedNavegacionAsync(db);
+
+            // ── Seed RF-05: comercios aliados + puntos de prueba ──────────────────
+            await SeedFidelizacionAsync(db);
         }
+
+        /// <summary>
+        /// Inserta comercios aliados de prueba y un historial de puntos ya "ganados"
+        /// para el usuario 'ciudadano', ya que todavía no existe el flujo real de
+        /// validar-ticket que dispararía RegistrarPuntosPorTicketValidadoAsync.
+        /// Solo inserta si no existe ningún ComercioAliado en la BD.
+        /// </summary>
+        private static async Task SeedFidelizacionAsync(AppDbContext db)
+        {
+            if (await db.ComercioAliado.AnyAsync())
+                return;
+
+            var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 0);
+
+            var comercio1 = new ComercioAliado
+            {
+                Nombre = "Café Verde Huancayo",
+                Direccion = "Jr. Real 456, Huancayo",
+                Ubicacion = gf.CreatePoint(new Coordinate(-75.2097, -12.0628))
+            };
+            var comercio2 = new ComercioAliado
+            {
+                Nombre = "Bicicletería El Tambo",
+                Direccion = "Av. Ferrocarril 789, El Tambo",
+                Ubicacion = gf.CreatePoint(new Coordinate(-75.1981, -12.0498))
+            };
+
+            db.ComercioAliado.AddRange(comercio1, comercio2);
+            await db.SaveChangesAsync();
+
+            // Puntos de prueba para el usuario 'ciudadano', simulando que ya
+            // validó un par de rutas (sin depender del flujo real de tickets).
+            var ciudadano = await db.Users.FirstOrDefaultAsync(u => u.UserName == "ciudadano");
+            if (ciudadano is not null)
+            {
+                db.PuntosLedgers.AddRange(
+                    new PuntosLedger
+                    {
+                        UsuarioId = ciudadano.Id,
+                        Usuario = ciudadano,
+                        Cantidad = 60,
+                        Tipo = TipoMovimiento.Ganados,
+                        Descripcion = "Ruta validada (dato de prueba): Centro → El Tambo",
+                        Fecha = DateTime.UtcNow.AddDays(-2)
+                    },
+                    new PuntosLedger
+                    {
+                        UsuarioId = ciudadano.Id,
+                        Usuario = ciudadano,
+                        Cantidad = 55,
+                        Tipo = TipoMovimiento.Ganados,
+                        Descripcion = "Ruta validada (dato de prueba): Chilca → Huancán",
+                        Fecha = DateTime.UtcNow.AddDays(-1)
+                    }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
 
         /// <summary>
         /// Inserta datos de demostración para el módulo RF-02.
