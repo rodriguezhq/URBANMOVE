@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using URBANMOVE_Proyecto.Server.Models.Database;
 using URBANMOVE_Proyecto.Server.Models.DTO;
 using URBANMOVE_Proyecto.Server.Services;
@@ -34,10 +35,11 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             {
 
                 var routeResult = await _routingService.CalculateRouteAsync(request.Coordinates, request.CancellationToken);
+                string lineGeoJson = new GeoJsonWriter().Write(routeResult.Geometry);
 
                 return Ok(new
                 {
-                    Geometry = routeResult.Geometry,
+                    Geometry = lineGeoJson,
                     DistanceMeters = routeResult.DistanceMeters,
                     DurationSeconds = routeResult.DurationSeconds
                 });
