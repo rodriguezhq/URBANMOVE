@@ -1,0 +1,23 @@
+{
+  "General": {
+    "FrontendUrl": "https://localhost:58010",
+    "RoutingUrl":"https://router.project-osrm.org/"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore": "Error"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=app.db"
+  },
+  "Email": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "test@gmail.com",
+    "Password": "xxxx xxxx xxxx xxxx"
+  }
+}

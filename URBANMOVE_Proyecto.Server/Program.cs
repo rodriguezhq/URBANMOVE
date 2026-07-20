@@ -58,6 +58,17 @@ builder.Services.Configure<EmailOptions>(
     );
 builder.Services.AddScoped<EmailService>();
 
+// https client
+builder.Services.AddHttpClient<RoutingService>((sp, client) =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+
+    client.BaseAddress = new Uri(
+        configuration["General:RoutingUrl"]!);
+
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
 // Servicios de dominio
 builder.Services.AddScoped<NavegacionService>();
 
@@ -66,6 +77,8 @@ builder.Services.AddScoped<IncidentesService>();
 builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddScoped<FidelizacionService>();
+
+builder.Services.AddScoped<RoutingService>();
 
 builder.Services.AddRateLimiter(options =>
 {
