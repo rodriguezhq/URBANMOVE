@@ -5,6 +5,8 @@ export interface LoginType {
 
 export interface UserType {
     id: string;
+    nombres: string;
+    apellidos: string;
     fullName: string;
     email: string;
     role: RolType;

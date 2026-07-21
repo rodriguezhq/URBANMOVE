@@ -2,9 +2,11 @@ import { Edit, HardHat, Pyramid, Triangle, User, X } from "lucide-react"
 import Skeleton from "../Components/Skeleton"
 import { useAuth } from "../Hooks/useAuth"
 import AppInput from "../Components/AppInput"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import AppButton from "../Components/AppButton"
 import type { UserType } from "../Types/authType"
+import { useNotification } from "../Components/Toast"
+import { AuthService } from "../services/AuthService"
 
 export default function PerfilView() {
     const { user, loading } = useAuth()
@@ -60,22 +62,35 @@ export default function PerfilView() {
 
 function PersonalDataForm({ user }: { user: UserType }) {
     const [enableEdit, setEnableEdit] = useState(false);
-    const [nombres, setNombres] = useState('');
-    const [apellidos, setApellidos] = useState('');
-    const firstInputRef = useRef<HTMLInputElement | null>(null);
+    const [nombres, setNombres] = useState(user.nombres);
+    const [apellidos, setApellidos] = useState(user.apellidos);
+    const [email, setEmail] = useState(user.email);
+    const { showDanger, showWarning, showSuccess , showBrand, showNeutral} = useNotification()
 
     const handleEnableEdit = () => {
         setEnableEdit(!enableEdit);
         if (!enableEdit) { // enable
-            firstInputRef.current?.focus();
+            
         } else { // cancel
-            setNombres(user.fullName.split(' ')[0] || '');
-            setApellidos(user.fullName.split(' ')[1] || '');
+            setNombres(user.nombres);
+            setApellidos(user.apellidos);
         }
     }
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+
+        if (nombres === user.nombres && apellidos === user.apellidos && email === user.email) {
+            showWarning("No hay cambios en los datos personales.")
+            return;
+        }
+        try {
+            await AuthService.editarDatosPersonales(nombres, apellidos, email);
+            showSuccess("Datos personales actualizados correctamente.")
+            setEnableEdit(false);
+        } catch (error) {
+            showDanger("Error al actualizar los datos personales.")
+        }
     }
 
     return (
@@ -96,7 +111,6 @@ function PersonalDataForm({ user }: { user: UserType }) {
                 <div className="flex flex-col gap-4">
                     <div className="grid grid-cols-2 gap-4">
                         <AppInput
-                            ref={firstInputRef}
                             appearance={enableEdit ? 'outline' : 'transparent'}
                             type="text"
                             value={nombres}
@@ -113,7 +127,14 @@ function PersonalDataForm({ user }: { user: UserType }) {
                             label={"Apellidos"}
                         />
                     </div>
-
+                    <AppInput
+                        appearance={enableEdit ? 'outline' : 'transparent'}
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={!enableEdit}
+                        label={"Correo electrónico"}
+                    />
                 </div>
             </fieldset>
             <div>
@@ -130,13 +151,53 @@ function PersonalDataForm({ user }: { user: UserType }) {
 
 function PasswordForm() {
     const [enableEdit, setEnableEdit] = useState(false);
+    
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
+    const { showDanger, showWarning, showSuccess } = useNotification()
+
+    const handleToggleEdit = () => {
+        setEnableEdit(!enableEdit);
+
+        if (enableEdit) {
+            console.log("Cancelando edición de contraseña");
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
+        }
+    }
+
+    const handleSubmit = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
+
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            showWarning("Por favor, complete todos los campos.");
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            showWarning("La nueva contraseña y la confirmación no coinciden.");
+            return;
+        }
+
+        try{
+            await AuthService.editarPassword(currentPassword, newPassword, confirmNewPassword);
+            showSuccess("Contraseña actualizada correctamente.");
+            setEnableEdit(false);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
+        }catch(error){
+            showDanger("Error al actualizar la contraseña.");
+        }
+    }
+
+
     return (
-        <form className="relative shadow p-4 w-3xl max-w-full">
-            <AppButton className="absolute top-0 right-0 p-2!" onClick={() => setEnableEdit(!enableEdit)} title={enableEdit ? "Cancelar edición" : "Editar datos"} >
+        <form className="relative shadow p-4 w-3xl max-w-full" onSubmit={handleSubmit}>
+            <AppButton className="absolute top-0 right-0 p-2!" onClick={handleToggleEdit} title={enableEdit ? "Cancelar edición" : "Editar datos"} >
                 {
                     enableEdit
                         ? <><X /></>
@@ -154,6 +215,8 @@ function PasswordForm() {
                         type="password"
                         label="Contraseña actual"
                         disabled={!enableEdit}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
                     />
                     <hr className="opacity-10" />
                     <AppInput
@@ -161,12 +224,16 @@ function PasswordForm() {
                         type="password"
                         label="Nueva contraseña"
                         disabled={!enableEdit}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
                     />
                     <AppInput
                         appearance={enableEdit ? 'outline' : 'transparent'}
                         type="password"
                         label="Confirmar nueva contraseña"
                         disabled={!enableEdit}
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
                     />
                 </div>
             </fieldset>

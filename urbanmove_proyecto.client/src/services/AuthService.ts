@@ -29,7 +29,7 @@ export const AuthService = {
     const response = await ApiClient.post("/auth/send-password-reset", { email });
     return response.data;
   },
-  sendResetPassword: async (email: string , token: string, newPassword: string, confirmPassword: string): Promise<void> => {
+  sendResetPassword: async (email: string, token: string, newPassword: string, confirmPassword: string): Promise<void> => {
     const response = await ApiClient.post("/auth/reset-password", { email, token, newPassword, confirmPassword });
     return response.data;
   },
@@ -51,4 +51,11 @@ export const AuthService = {
   rechazarOperador: async (id: string, motivo: string): Promise<void> => {
     await ApiClient.post(`/auth/operadores/${id}/rechazar`, { motivo });
   },
+  editarDatosPersonales: async (nombres: string, apellidos: string, email: string): Promise<UserType> => {
+    const response = await ApiClient.put("/auth/datos-personales", { nombres, apellidos, email });
+    return response.data;
+  },
+  editarPassword: async (currentPassword: string, newPassword: string, confirmNewPassword: string): Promise<void> => {
+    await ApiClient.put("/auth/password", { currentPassword, newPassword, confirmNewPassword });
+  }
 };

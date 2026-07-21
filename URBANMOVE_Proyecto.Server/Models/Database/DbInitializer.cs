@@ -35,6 +35,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     Email = "admin@admin.com",
                     Activo = true,
                     EstadoAprobacion = EstadoAprobacion.Aprobado,
+                    EmailConfirmed = true
                 };
 
                 var ciudadanoUser = new Usuario
@@ -46,6 +47,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     Email = "ciudadano@ciudadano.com",
                     Activo = true,
                     EstadoAprobacion = EstadoAprobacion.Aprobado,
+                    EmailConfirmed = true
                 };
 
                 var operadorUser = new Usuario
@@ -57,6 +59,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     Email = "operador@operador.com",
                     Activo = true,
                     EstadoAprobacion = EstadoAprobacion.Aprobado,
+                    EmailConfirmed = true
                 };
 
                 var operadorPendienteUser = new Usuario

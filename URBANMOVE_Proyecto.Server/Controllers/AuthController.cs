@@ -76,6 +76,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new LoginResponse
             {
                 Id = user.Id,
+                Nombres = user.Nombres,
+                Apellidos = user.Apellidos,
                 FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = roles.FirstOrDefault() ?? Roles.Ciudadano,
@@ -109,6 +111,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new MeResponse
             {
                 Id = userId ?? "",
+                Nombres = user?.Nombres ?? "",
+                Apellidos = user?.Apellidos ?? "",
                 FullName = fullName ?? "",
                 Email = email ?? "",
                 Role = role ?? "",
@@ -172,6 +176,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new LoginResponse
             {
                 Id = user.Id,
+                Nombres = user.Nombres,
+                Apellidos = user.Apellidos,
                 FullName = $"{user.Nombres} {user.Apellidos}",
                 Email = user.Email ?? "",
                 Role = Roles.Ciudadano,
@@ -335,6 +341,58 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             }
 
             return Ok(new { message = "Solicitud de operador rechazada" });
+        }
+
+        [Authorize]
+        [HttpPut("datos-personales")]
+        public async Task<IActionResult> EditDatosPersonales([FromBody] EditDatosPersonalesRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId == null)
+                return Unauthorized(new { message = "Usuario no autenticado" });
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return NotFound(new { message = "Usuario no encontrado" });
+
+            user.Nombres = request.Nombres;
+            user.Apellidos = request.Apellidos;
+            user.Email = request.Email;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                return BadRequest(new { message = errors });
+            }
+
+            return Ok(new { message = "Datos personales actualizados exitosamente" });
+        }
+
+        [Authorize]
+        [HttpPut("password")]
+        public async Task<IActionResult> EditPassword([FromBody] EditPasswordRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId == null)
+                return Unauthorized(new { message = "Usuario no autenticado" });
+            
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return NotFound(new { message = "Usuario no encontrado" });
+
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                return BadRequest(new { message = errors });
+            }
+
+            return Ok(new { message = "Contraseña actualizada exitosamente" });
         }
 
     }

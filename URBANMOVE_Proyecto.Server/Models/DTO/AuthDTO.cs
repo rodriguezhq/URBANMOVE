@@ -12,6 +12,8 @@ namespace URBANMOVE_Proyecto.Server.Models.DTO
     {
 
         public required string Id { get; set; }
+        public required string Nombres { get; set; }
+        public required string Apellidos { get; set; }
         public required string FullName { get; set; }
         public required string Email { get; set; }
         public required string Role { get; set; }
@@ -70,4 +72,16 @@ namespace URBANMOVE_Proyecto.Server.Models.DTO
         public required string Motivo { get; set; }
     }
 
+    public sealed class EditDatosPersonalesRequest
+    {
+        public required string Nombres { get; set; }
+        public required string Apellidos { get; set; }
+        public required string Email { get; set; }
+    }
+    public sealed class EditPasswordRequest
+    {
+        public required string CurrentPassword { get; set; }
+        public required string NewPassword { get; set; }
+        public required string ConfirmNewPassword { get; set; }
+    }
 }
