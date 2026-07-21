@@ -5,7 +5,7 @@ import EmptyState from '../Components/NavegarComponents/EmptyState';
 import { useCallback, useEffect, useState } from 'react';
 import type { FiltrosBusqueda, LineaDto, ParadaDto, ResultadoPaginadoDto, RutaResumenDto } from '../Types/navegacionTypes';
 import { NavegacionService } from '../services/NavegacionService';
-import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup, GeoJSON } from 'react-leaflet';
 import AppButton from '../Components/AppButton';
 const FILTROS_INICIALES: FiltrosBusqueda = {
     soloConAsientos: false,
@@ -27,6 +27,11 @@ export default function NavegarView() {
     const hayResultados = (resultado?.datos?.length ?? 0) > 0;
     const totalPaginas = resultado?.totalPaginas ?? 0;
     const trazoRuta = rutaSeleccionada?.paradas.map(rp => [rp.parada.lat, rp.parada.lng] as [number, number]) || [];
+    
+    // Parseamos el string GeoJSON que viene del backend a un objeto JSON
+    const recorridoObj = rutaSeleccionada?.recorridoGeoJson 
+        ? JSON.parse(rutaSeleccionada.recorridoGeoJson) 
+        : null;
 
     useEffect(() => {
         const cargarCatalogos = async () => {
@@ -220,16 +225,28 @@ export default function NavegarView() {
                             attribution="&copy; OpenStreetMap"
                         />
 
-                        {/* Dibujar trazo solo si hay una ruta seleccionada */}
+                        {/* Dibujar el trazo real usando GeoJSON */}
+                        {recorridoObj && (
+                            <GeoJSON
+                                key={`geojson-${rutaSeleccionada?.id}`} // Key importante para que se actualice al cambiar de ruta
+                                data={recorridoObj}
+                                style={{ color: '#7c3aed', weight: 6, opacity: 0.8 }}
+                            />
+                        )}
+
+                        {/* Si no hay GeoJSON, caemos al Polyline básico de las paradas (opcional, pero buena práctica por si falla) */}
+                        {!recorridoObj && trazoRuta.length > 0 && (
+                            <Polyline
+                                positions={trazoRuta}
+                                color="#7c3aed" // Color violeta
+                                weight={6}
+                                opacity={0.8}
+                            />
+                        )}
+
+                        {/* Dibujar marcadores de origen y destino */}
                         {trazoRuta.length > 0 && (
                             <>
-                                <Polyline
-                                    positions={trazoRuta}
-                                    color="#7c3aed" // Color violeta
-                                    weight={6}
-                                    opacity={0.8}
-                                />
-
                                 {/* Marcador Origen */}
                                 <Marker position={trazoRuta[0]}>
                                     <Popup>Origen: {rutaSeleccionada?.paradas[0].parada.nombre}</Popup>

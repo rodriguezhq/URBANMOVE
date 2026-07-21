@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using URBANMOVE_Proyecto.Server.Services;
+using URBANMOVE_Proyecto.Server.Models.DTO;
 
 namespace URBANMOVE_Proyecto.Server.Models.Database
 {
     public static class DbInitializer
     {
-        public static async Task InitializeAsync(AppDbContext db, RoleManager<IdentityRole> roleManager, UserManager<Usuario> userManager)
+        public static async Task InitializeAsync(AppDbContext db, RoleManager<IdentityRole> roleManager, UserManager<Usuario> userManager, RoutingService routingService)
         {
             // Migraciones pendientes
             await db.Database.MigrateAsync();
@@ -91,7 +93,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             }
 
             // ── Seed RF-02: siempre verifica si faltan datos de navegación ────────
-            await SeedNavegacionAsync(db);
+            await SeedNavegacionAsync(db, routingService);
 
             // ── Seed RF-05: comercios aliados + puntos de prueba ──────────────────
             await SeedFidelizacionAsync(db);
@@ -161,7 +163,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
         /// Paradas con coordenadas reales de Huancayo, Perú (SRID 4326).
         /// Solo inserta si no existe ninguna Linea en la BD.
         /// </summary>
-        private static async Task SeedNavegacionAsync(AppDbContext db)
+        private static async Task SeedNavegacionAsync(AppDbContext db, RoutingService routingService)
         {
             // Guard: si ya hay líneas, los datos de navegación ya fueron insertados
             if (await db.Lineas.AnyAsync())
@@ -214,12 +216,12 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             {
                 Nombre = "Centro → El Tambo (Av. Ferrocarril)",
                 Linea = lineaA,
-                Recorrido = gf.CreateLineString([
-                    new Coordinate(-75.2103, -12.0694),
-                    new Coordinate(-75.2097, -12.0628),
-                    new Coordinate(-75.2042, -12.0563),
-                    new Coordinate(-75.1981, -12.0498),
-                ]),
+                Recorrido = (await routingService.CalculateRouteAsync([
+                    new WaypointDto { Lng = pTerminal.Ubicacion.X, Lat = pTerminal.Ubicacion.Y },
+                    new WaypointDto { Lng = pPlaza.Ubicacion.X, Lat = pPlaza.Ubicacion.Y },
+                    new WaypointDto { Lng = pRealPlaza.Ubicacion.X, Lat = pRealPlaza.Ubicacion.Y },
+                    new WaypointDto { Lng = pElTambo.Ubicacion.X, Lat = pElTambo.Ubicacion.Y }
+                ])).Geometry
             };
             db.Rutas.Add(rutaA1);
             await db.SaveChangesAsync();
@@ -233,14 +235,14 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
 
             var rutaA2 = new Ruta
             {
-                Nombre = "El Tambo → Centro (Retorno)",
+                Nombre = "El Tambo → Centro (Av. Huancavelica)",
                 Linea = lineaA,
-                Recorrido = gf.CreateLineString([
-                    new Coordinate(-75.1981, -12.0498),
-                    new Coordinate(-75.2042, -12.0563),
-                    new Coordinate(-75.2097, -12.0628),
-                    new Coordinate(-75.2103, -12.0694),
-                ]),
+                Recorrido = (await routingService.CalculateRouteAsync([
+                    new WaypointDto { Lng = pElTambo.Ubicacion.X, Lat = pElTambo.Ubicacion.Y },
+                    new WaypointDto { Lng = pRealPlaza.Ubicacion.X, Lat = pRealPlaza.Ubicacion.Y },
+                    new WaypointDto { Lng = pPlaza.Ubicacion.X, Lat = pPlaza.Ubicacion.Y },
+                    new WaypointDto { Lng = pTerminal.Ubicacion.X, Lat = pTerminal.Ubicacion.Y }
+                ])).Geometry
             };
             db.Rutas.Add(rutaA2);
             await db.SaveChangesAsync();
@@ -255,14 +257,14 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             // ── Rutas Línea B ──────────────────────────────────────────────────────
             var rutaB1 = new Ruta
             {
-                Nombre = "Chilca → Huancán (Circular)",
+                Nombre = "Chilca → Huancán (Ruta Sur)",
                 Linea = lineaB,
-                Recorrido = gf.CreateLineString([
-                    new Coordinate(-75.2165, -12.0748),
-                    new Coordinate(-75.2103, -12.0694),
-                    new Coordinate(-75.2078, -12.0720),
-                    new Coordinate(-75.1897, -12.0830),
-                ]),
+                Recorrido = (await routingService.CalculateRouteAsync([
+                    new WaypointDto { Lng = pChilca.Ubicacion.X, Lat = pChilca.Ubicacion.Y },
+                    new WaypointDto { Lng = pTerminal.Ubicacion.X, Lat = pTerminal.Ubicacion.Y },
+                    new WaypointDto { Lng = pMayorista.Ubicacion.X, Lat = pMayorista.Ubicacion.Y },
+                    new WaypointDto { Lng = pHuancan.Ubicacion.X, Lat = pHuancan.Ubicacion.Y }
+                ])).Geometry
             };
             db.Rutas.Add(rutaB1);
             await db.SaveChangesAsync();
@@ -276,14 +278,14 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
 
             var rutaB2 = new Ruta
             {
-                Nombre = "Universidad → Cajamarquilla",
+                Nombre = "Huancán → Chilca (Ruta Norte)",
                 Linea = lineaB,
-                Recorrido = gf.CreateLineString([
-                    new Coordinate(-75.2130, -12.0582),
-                    new Coordinate(-75.2097, -12.0628),
-                    new Coordinate(-75.2071, -12.0652),
-                    new Coordinate(-75.1954, -12.0461),
-                ]),
+                Recorrido = (await routingService.CalculateRouteAsync([
+                    new WaypointDto { Lng = pUniversidad.Ubicacion.X, Lat = pUniversidad.Ubicacion.Y },
+                    new WaypointDto { Lng = pPlaza.Ubicacion.X, Lat = pPlaza.Ubicacion.Y },
+                    new WaypointDto { Lng = pHospital.Ubicacion.X, Lat = pHospital.Ubicacion.Y },
+                    new WaypointDto { Lng = pCajamarquilla.Ubicacion.X, Lat = pCajamarquilla.Ubicacion.Y }
+                ])).Geometry
             };
             db.Rutas.Add(rutaB2);
             await db.SaveChangesAsync();

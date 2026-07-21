@@ -34,6 +34,7 @@ export interface RutaResumenDto {
     linea: LineaDto;
     paradas: RutaParadaDto[];
     salidas: SalidaDto[];
+    recorridoGeoJson?: string;
 }
 
 export interface ResultadoPaginadoDto<T> {

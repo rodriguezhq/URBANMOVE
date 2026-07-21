@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.IO;
 using URBANMOVE_Proyecto.Server.Models.Database;
 using URBANMOVE_Proyecto.Server.Models.DTO;
 
@@ -131,11 +132,14 @@ namespace URBANMOVE_Proyecto.Server.Services
                 if (req.SoloConAsientos && salidasDeLaRuta.All(s => s.AsientosDisponibles == 0))
                     continue;
 
+                var geoJsonWriter = new GeoJsonWriter();
+
                 resultado.Add(new RutaResumenDto
                 {
                     Id = ruta.Id,
                     Nombre = ruta.Nombre,
                     Linea = new LineaDto { Id = ruta.Linea.Id, Nombre = ruta.Linea.Nombre },
+                    RecorridoGeoJson = geoJsonWriter.Write(ruta.Recorrido),
                     Paradas = ruta.RutaParadas
                         .OrderBy(rp => rp.Orden)
                         .Select(rp => new RutaParadaDto
@@ -203,11 +207,14 @@ namespace URBANMOVE_Proyecto.Server.Services
                 .Select(g => new { SalidaId = g.Key, Ocupados = g.Count() })
                 .ToDictionaryAsync(x => x.SalidaId, x => x.Ocupados);
 
+            var geoJsonWriter = new GeoJsonWriter();
+
             return new RutaResumenDto
             {
                 Id = ruta.Id,
                 Nombre = ruta.Nombre,
                 Linea = new LineaDto { Id = ruta.Linea.Id, Nombre = ruta.Linea.Nombre },
+                RecorridoGeoJson = geoJsonWriter.Write(ruta.Recorrido),
                 Paradas = ruta.RutaParadas
                     .OrderBy(rp => rp.Orden)
                     .Select(rp => new RutaParadaDto

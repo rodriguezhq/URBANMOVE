@@ -82,6 +82,9 @@ namespace URBANMOVE_Proyecto.Server.Models.DTO
 
         /// <summary>Salidas que coinciden con los filtros aplicados.</summary>
         public List<SalidaDto> Salidas { get; set; } = [];
+
+        /// <summary>El trazo completo de la ruta en formato GeoJSON para pintar en el mapa.</summary>
+        public string? RecorridoGeoJson { get; set; }
     }
 
     // ──────────────────────────────────────────
