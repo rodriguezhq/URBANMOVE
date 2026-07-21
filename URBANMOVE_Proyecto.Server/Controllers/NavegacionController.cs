@@ -12,7 +12,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     /// </summary>
     [ApiController]
     [Route("navegacion")]
-    [Authorize(Roles = Roles.Ciudadano)]
+    [Authorize(Roles = "ciudadano,admin,operador")]
     public class NavegacionController : ControllerBase
     {
         private readonly NavegacionService _navegacion;

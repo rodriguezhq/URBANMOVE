@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
 import { use, useCallback, useMemo, useState } from 'react';
-import { AlertTriangle, Bus, CheckIcon, HardHat, Home, Layout, LogOut, Menu, Send, SendHorizonal, Star, Store, Ticket, User, Wallet } from 'lucide-react';
+import { AlertTriangle, Bus, CheckIcon, HardHat, Home, Layout, LogOut, Map, Menu, Send, SendHorizonal, Star, Store, Ticket, User, Wallet } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
 import type { RolType, UserType } from '../../Types/authType';
@@ -32,6 +32,7 @@ const Routes = {
     ],
     admin: [
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
+        { url: '/app/rutas', icon: <Map size={24} />, name: 'Rutas' },
         { url: '/app/gestion-incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
         { url: '/app/operadores', icon: <HardHat size={24} />, name: 'Operadores' },
         { url: '/app/comercios', icon: <Store size={24} />, name: 'Comercios' },
