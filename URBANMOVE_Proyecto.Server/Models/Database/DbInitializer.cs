@@ -87,7 +87,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             if (await db.ComercioAliado.AnyAsync())
                 return;
 
-            var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 0);
+            var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
             var comercio1 = new ComercioAliado
             {
@@ -146,7 +146,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             if (await db.Lineas.AnyAsync())
                 return;
 
-            var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 0);
+            var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
             // ── Líneas ─────────────────────────────────────────────────────────────
             var lineaA = new Linea { Nombre = "Línea A – Centro/El Tambo" };
@@ -171,15 +171,15 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             db.UnidadesTransporte.AddRange(unidad1, unidad2);
 
             // ── Paradas (coordenadas reales de Huancayo) ───────────────────────────
-            var pTerminal  = new Parada { Nombre = "Terminal Terraza",          Ubicacion = gf.CreatePoint(new Coordinate(-75.2103, -12.0694)) };
-            var pPlaza     = new Parada { Nombre = "Plaza de Huancayo",         Ubicacion = gf.CreatePoint(new Coordinate(-75.2097, -12.0628)) };
-            var pRealPlaza = new Parada { Nombre = "Real Plaza Huancayo",       Ubicacion = gf.CreatePoint(new Coordinate(-75.2042, -12.0563)) };
-            var pElTambo   = new Parada { Nombre = "El Tambo – Av. Ferrocarril",Ubicacion = gf.CreatePoint(new Coordinate(-75.1981, -12.0498)) };
-            var pHospital  = new Parada { Nombre = "Hospital Daniel Alcides",   Ubicacion = gf.CreatePoint(new Coordinate(-75.2071, -12.0652)) };
-            var pChilca    = new Parada { Nombre = "Chilca – Mercado",          Ubicacion = gf.CreatePoint(new Coordinate(-75.2165, -12.0748)) };
-            var pHuancan   = new Parada { Nombre = "Huancán – Plaza",           Ubicacion = gf.CreatePoint(new Coordinate(-75.1897, -12.0830)) };
-            var pUniversidad = new Parada { Nombre = "UNCP – Universidad",      Ubicacion = gf.CreatePoint(new Coordinate(-75.2130, -12.0582)) };
-            var pMayorista = new Parada { Nombre = "Mercado Mayorista",         Ubicacion = gf.CreatePoint(new Coordinate(-75.2078, -12.0720)) };
+            var pTerminal = new Parada { Nombre = "Terminal Terraza", Ubicacion = gf.CreatePoint(new Coordinate(-75.2103, -12.0694)) };
+            var pPlaza = new Parada { Nombre = "Plaza de Huancayo", Ubicacion = gf.CreatePoint(new Coordinate(-75.2097, -12.0628)) };
+            var pRealPlaza = new Parada { Nombre = "Real Plaza Huancayo", Ubicacion = gf.CreatePoint(new Coordinate(-75.2042, -12.0563)) };
+            var pElTambo = new Parada { Nombre = "El Tambo – Av. Ferrocarril", Ubicacion = gf.CreatePoint(new Coordinate(-75.1981, -12.0498)) };
+            var pHospital = new Parada { Nombre = "Hospital Daniel Alcides", Ubicacion = gf.CreatePoint(new Coordinate(-75.2071, -12.0652)) };
+            var pChilca = new Parada { Nombre = "Chilca – Mercado", Ubicacion = gf.CreatePoint(new Coordinate(-75.2165, -12.0748)) };
+            var pHuancan = new Parada { Nombre = "Huancán – Plaza", Ubicacion = gf.CreatePoint(new Coordinate(-75.1897, -12.0830)) };
+            var pUniversidad = new Parada { Nombre = "UNCP – Universidad", Ubicacion = gf.CreatePoint(new Coordinate(-75.2130, -12.0582)) };
+            var pMayorista = new Parada { Nombre = "Mercado Mayorista", Ubicacion = gf.CreatePoint(new Coordinate(-75.2078, -12.0720)) };
             var pCajamarquilla = new Parada { Nombre = "Cajamarquilla – Paradero", Ubicacion = gf.CreatePoint(new Coordinate(-75.1954, -12.0461)) };
 
             db.Paradas.AddRange(pTerminal, pPlaza, pRealPlaza, pElTambo, pHospital,
@@ -204,10 +204,10 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             await db.SaveChangesAsync();
 
             db.RutaParadas.AddRange(
-                new RutaParada { RutaId = rutaA1.Id, ParadaId = pTerminal.Id,  Ruta = rutaA1, Parada = pTerminal,  Orden = 1 },
-                new RutaParada { RutaId = rutaA1.Id, ParadaId = pPlaza.Id,     Ruta = rutaA1, Parada = pPlaza,     Orden = 2 },
+                new RutaParada { RutaId = rutaA1.Id, ParadaId = pTerminal.Id, Ruta = rutaA1, Parada = pTerminal, Orden = 1 },
+                new RutaParada { RutaId = rutaA1.Id, ParadaId = pPlaza.Id, Ruta = rutaA1, Parada = pPlaza, Orden = 2 },
                 new RutaParada { RutaId = rutaA1.Id, ParadaId = pRealPlaza.Id, Ruta = rutaA1, Parada = pRealPlaza, Orden = 3 },
-                new RutaParada { RutaId = rutaA1.Id, ParadaId = pElTambo.Id,   Ruta = rutaA1, Parada = pElTambo,   Orden = 4 }
+                new RutaParada { RutaId = rutaA1.Id, ParadaId = pElTambo.Id, Ruta = rutaA1, Parada = pElTambo, Orden = 4 }
             );
 
             var rutaA2 = new Ruta
@@ -225,10 +225,10 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             await db.SaveChangesAsync();
 
             db.RutaParadas.AddRange(
-                new RutaParada { RutaId = rutaA2.Id, ParadaId = pElTambo.Id,   Ruta = rutaA2, Parada = pElTambo,   Orden = 1 },
+                new RutaParada { RutaId = rutaA2.Id, ParadaId = pElTambo.Id, Ruta = rutaA2, Parada = pElTambo, Orden = 1 },
                 new RutaParada { RutaId = rutaA2.Id, ParadaId = pRealPlaza.Id, Ruta = rutaA2, Parada = pRealPlaza, Orden = 2 },
-                new RutaParada { RutaId = rutaA2.Id, ParadaId = pPlaza.Id,     Ruta = rutaA2, Parada = pPlaza,     Orden = 3 },
-                new RutaParada { RutaId = rutaA2.Id, ParadaId = pTerminal.Id,  Ruta = rutaA2, Parada = pTerminal,  Orden = 4 }
+                new RutaParada { RutaId = rutaA2.Id, ParadaId = pPlaza.Id, Ruta = rutaA2, Parada = pPlaza, Orden = 3 },
+                new RutaParada { RutaId = rutaA2.Id, ParadaId = pTerminal.Id, Ruta = rutaA2, Parada = pTerminal, Orden = 4 }
             );
 
             // ── Rutas Línea B ──────────────────────────────────────────────────────
@@ -247,10 +247,10 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             await db.SaveChangesAsync();
 
             db.RutaParadas.AddRange(
-                new RutaParada { RutaId = rutaB1.Id, ParadaId = pChilca.Id,    Ruta = rutaB1, Parada = pChilca,    Orden = 1 },
-                new RutaParada { RutaId = rutaB1.Id, ParadaId = pTerminal.Id,  Ruta = rutaB1, Parada = pTerminal,  Orden = 2 },
+                new RutaParada { RutaId = rutaB1.Id, ParadaId = pChilca.Id, Ruta = rutaB1, Parada = pChilca, Orden = 1 },
+                new RutaParada { RutaId = rutaB1.Id, ParadaId = pTerminal.Id, Ruta = rutaB1, Parada = pTerminal, Orden = 2 },
                 new RutaParada { RutaId = rutaB1.Id, ParadaId = pMayorista.Id, Ruta = rutaB1, Parada = pMayorista, Orden = 3 },
-                new RutaParada { RutaId = rutaB1.Id, ParadaId = pHuancan.Id,   Ruta = rutaB1, Parada = pHuancan,   Orden = 4 }
+                new RutaParada { RutaId = rutaB1.Id, ParadaId = pHuancan.Id, Ruta = rutaB1, Parada = pHuancan, Orden = 4 }
             );
 
             var rutaB2 = new Ruta
@@ -268,10 +268,10 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
             await db.SaveChangesAsync();
 
             db.RutaParadas.AddRange(
-                new RutaParada { RutaId = rutaB2.Id, ParadaId = pUniversidad.Id,    Ruta = rutaB2, Parada = pUniversidad,    Orden = 1 },
-                new RutaParada { RutaId = rutaB2.Id, ParadaId = pPlaza.Id,          Ruta = rutaB2, Parada = pPlaza,          Orden = 2 },
-                new RutaParada { RutaId = rutaB2.Id, ParadaId = pHospital.Id,       Ruta = rutaB2, Parada = pHospital,       Orden = 3 },
-                new RutaParada { RutaId = rutaB2.Id, ParadaId = pCajamarquilla.Id,  Ruta = rutaB2, Parada = pCajamarquilla,  Orden = 4 }
+                new RutaParada { RutaId = rutaB2.Id, ParadaId = pUniversidad.Id, Ruta = rutaB2, Parada = pUniversidad, Orden = 1 },
+                new RutaParada { RutaId = rutaB2.Id, ParadaId = pPlaza.Id, Ruta = rutaB2, Parada = pPlaza, Orden = 2 },
+                new RutaParada { RutaId = rutaB2.Id, ParadaId = pHospital.Id, Ruta = rutaB2, Parada = pHospital, Orden = 3 },
+                new RutaParada { RutaId = rutaB2.Id, ParadaId = pCajamarquilla.Id, Ruta = rutaB2, Parada = pCajamarquilla, Orden = 4 }
             );
 
             await db.SaveChangesAsync();

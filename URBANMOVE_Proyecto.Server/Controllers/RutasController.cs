@@ -59,6 +59,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             {
                 var reader = new GeoJsonReader();
                 var geometry = reader.Read<LineString>(request.GeoJsonRecorrido);
+                geometry.SRID = 4326;
                 var nuevaRuta = new Ruta
                 {
                     Nombre = request.Nombre,

@@ -19,5 +19,12 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
         public DbSet<ComercioAliado> ComercioAliado => Set<ComercioAliado>();
         public DbSet<PuntosLedger> PuntosLedgers => Set<PuntosLedger>();
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Parada>().Property(p => p.Ubicacion).HasSrid(4326);
+            builder.Entity<Ruta>().Property(r => r.Recorrido).HasSrid(4326);
+            builder.Entity<ComercioAliado>().Property(c => c.Ubicacion).HasSrid(4326);
+        }
     }
 }
