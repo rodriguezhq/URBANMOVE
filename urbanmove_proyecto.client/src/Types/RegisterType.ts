@@ -5,4 +5,5 @@ export interface RegisterType{
     email: string;
     password: string;
     confirmPassword: string;
+    rolSolicitado?: 'ciudadano' | 'operador';
 }

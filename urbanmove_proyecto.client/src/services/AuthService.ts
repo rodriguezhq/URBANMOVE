@@ -1,5 +1,5 @@
 import { ApiClient } from "./api";
-import type { LoginType, UserType } from "../Types/authType";
+import type { LoginType, UserType, OperadorPendienteType, RegisterResultType } from "../Types/authType";
 import type { RegisterType } from "../Types/RegisterType";
 
 export const AuthService = {
@@ -21,7 +21,7 @@ export const AuthService = {
     }
   },
 
-  register: async (registerData: RegisterType): Promise<UserType> => {
+  register: async (registerData: RegisterType): Promise<RegisterResultType> => {
     const response = await ApiClient.post("/auth/register", registerData);
     return response.data;
   },
@@ -40,5 +40,15 @@ export const AuthService = {
   sendConfirmEmail: async (email: string, token: string): Promise<void> => {
     const response = await ApiClient.post("/auth/verify-email", { email, token });
     return response.data;
-  }
+  },
+  listarOperadoresPendientes: async (): Promise<OperadorPendienteType[]> => {
+    const response = await ApiClient.get("/auth/operadores/pendientes");
+    return response.data;
+  },
+  aprobarOperador: async (id: string): Promise<void> => {
+    await ApiClient.post(`/auth/operadores/${id}/aprobar`);
+  },
+  rechazarOperador: async (id: string, motivo: string): Promise<void> => {
+    await ApiClient.post(`/auth/operadores/${id}/rechazar`, { motivo });
+  },
 };

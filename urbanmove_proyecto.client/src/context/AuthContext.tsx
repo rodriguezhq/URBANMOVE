@@ -8,7 +8,7 @@ interface AuthContextValue {
     user: UserType | null;
     loading: boolean;
     Login: (loginData: LoginType) => Promise<boolean>;
-    register: (registerData: RegisterType) => Promise<boolean>;
+    register: (registerData: RegisterType) => Promise<{ pendiente: boolean; message: string }>;
     logout: () => Promise<void>;
 }
 
@@ -42,12 +42,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     };
 
-    const register = async (registerData: RegisterType): Promise<boolean> => {
+    const register = async (registerData: RegisterType): Promise<{ pendiente: boolean; message: string }> => {
         setLoading(true);
         try {
-            const newUser = await AuthService.register(registerData);
-            setUser(newUser);
-            return true;
+            const result = await AuthService.register(registerData);
+
+            if (result.role) {
+                // Ciudadano: el backend ya inició sesión
+                setUser({
+                    id: result.id!,
+                    fullName: result.fullName!,
+                    email: result.email!,
+                    role: result.role,
+                    verifiedEmail: result.verifiedEmail ?? false,
+                });
+                return { pendiente: false, message: result.message };
+            }
+
+            // Operador: queda pendiente de aprobación, no hay sesión iniciada
+            return { pendiente: true, message: result.message };
         } catch (error) {
             console.error("Fallo de Registro", error);
             throw error;

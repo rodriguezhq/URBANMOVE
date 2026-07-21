@@ -17,6 +17,8 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [rolSolicitado, setRolSolicitado] = useState<'ciudadano' | 'operador'>('ciudadano');
+    const [pendienteMensaje, setPendienteMensaje] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -34,8 +36,12 @@ function Register() {
 
         setSubmitting(true);
         try {
-            await register({ nombres: name, apellidos: lastName, dni, email, password, confirmPassword });
-            navigate('/app');
+            const resultado = await register({ nombres: name, apellidos: lastName, dni, email, password, confirmPassword, rolSolicitado });
+            if (resultado.pendiente) {
+                setPendienteMensaje(resultado.message);
+            } else {
+                navigate('/app');
+            }
         } catch (err) {
             if (isAxiosError(err) && err.response?.data?.message) {
                 setError(err.response.data.message);
@@ -52,6 +58,18 @@ function Register() {
             navigate('/app');
         }
     }, [user]);
+
+    if (pendienteMensaje) {
+        return (
+            <div className="flex flex-col items-start gap-4 max-w-md">
+                <h2 className="text-2xl font-bold text-blue-950">Solicitud enviada</h2>
+                <p className="text-gray-600">{pendienteMensaje}</p>
+                <AppLink appearance='subtle' to="/login" className='flex items-center gap-2'>
+                    <ChevronLeft /> Volver a iniciar sesión
+                </AppLink>
+            </div>
+        );
+    }
 
     return (<>
         {
@@ -102,6 +120,18 @@ function Register() {
                             value={email} onChange={(e) => setEmail(e.target.value)}
                             leading={<Mail />} />
                     </div>
+
+                    <label className="flex flex-col gap-1 text-sm font-bold text-gray-700 w-full">
+                        Quiero registrarme como
+                        <select
+                            value={rolSolicitado}
+                            onChange={(e) => setRolSolicitado(e.target.value as 'ciudadano' | 'operador')}
+                            className="border p-2 rounded"
+                        >
+                            <option value="ciudadano">Ciudadano</option>
+                            <option value="operador">Operador (requiere aprobación del administrador)</option>
+                        </select>
+                    </label>
 
                     <AppInput
                         label="Contraseña"
