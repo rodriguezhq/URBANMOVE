@@ -1,10 +1,11 @@
 import { cva } from "class-variance-authority";
 import type { Appearance } from "../Types/styleTypes";
 import { twMerge } from "tailwind-merge";
+import { forwardRef } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label: string;
-    value: string;
+    label?: string;
+    value?: string;
     appearance?: Appearance;
     leading?: React.ReactNode;
     trailing?: React.ReactNode;
@@ -25,7 +26,7 @@ const AppInnputVariante = cva(
     }
 )
 
-export default function AppInput({ label, type, value, onChange, appearance = 'outline', leading, trailing, className, containerClassName, ...props }: InputProps) {
+const AppInput = forwardRef<HTMLInputElement, InputProps>(function AppInput({ label, type, value, onChange, appearance = 'outline', leading, trailing, className, containerClassName, ...props }: InputProps, ref) {
     return (
         <label className={
             twMerge(
@@ -61,5 +62,7 @@ export default function AppInput({ label, type, value, onChange, appearance = 'o
             </div>
         </label>
     );
-}
+});
+
+export default AppInput;
 

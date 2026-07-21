@@ -13,7 +13,7 @@ export default function ResetPasswordView() {
     const [params, _] = useSearchParams();
     const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         setState("loading");
         try {

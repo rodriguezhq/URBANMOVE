@@ -16,6 +16,7 @@ import EmailVerificationScreen from '../services/EmailVerificationScreen';
 import GestionComerciosView from '../views/GestionComerciosView';
 import TicketsView from '../views/TicketsView';
 import GestionRutasView from '../views/GestionRutasView';
+import PerfilView from '../views/PerfilView';
 
 export function AppRoutes() {
     return (
@@ -47,6 +48,7 @@ export function AppRoutes() {
                 <Route path="puntos" element={<FidelizacionView />} />
                 <Route path="comercios" element={<GestionComerciosView />} />
                 <Route path="rutas" element={<GestionRutasView />} />
+                <Route path="perfil" element={<PerfilView />} />
             </Route>
 
         </Routes>

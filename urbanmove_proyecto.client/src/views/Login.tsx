@@ -27,7 +27,8 @@ function Login() {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
         setError(null);
         setSubmitting(true);
         try {
@@ -59,7 +60,7 @@ function Login() {
                     <Spinner />
                 </div>
                 :
-                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex flex-col justify-center items-start gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col justify-center items-start gap-5">
                     <h2 className='text-3xl lg:text-5xl font-medium pb-6 lg:pb-24'>
                         <span className='text-violet-600 font-bold'>
                             Hola,
