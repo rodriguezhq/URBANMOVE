@@ -34,6 +34,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     DNI = "00000000",
                     Email = "admin@admin.com",
                     Activo = true,
+                    EstadoAprobacion = EstadoAprobacion.Aprobado,
                 };
 
                 var ciudadanoUser = new Usuario
@@ -44,6 +45,7 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     DNI = "11111111",
                     Email = "ciudadano@ciudadano.com",
                     Activo = true,
+                    EstadoAprobacion = EstadoAprobacion.Aprobado,
                 };
 
                 var operadorUser = new Usuario
@@ -54,6 +56,18 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                     DNI = "22222222",
                     Email = "operador@operador.com",
                     Activo = true,
+                    EstadoAprobacion = EstadoAprobacion.Aprobado,
+                };
+
+                var operadorPendienteUser = new Usuario
+                {
+                    UserName = "operador.pendiente",
+                    Nombres = "Rosa",
+                    Apellidos = "Quispe",
+                    DNI = "33333333",
+                    Email = "operador.pendiente@urbanmove.com",
+                    Activo = false,
+                    EstadoAprobacion = EstadoAprobacion.Pendiente,
                 };
 
                 var result = await userManager.CreateAsync(adminUser, "admin123");
@@ -67,6 +81,10 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
                 result = await userManager.CreateAsync(operadorUser, "operador123");
                 if (result.Succeeded)
                     await userManager.AddToRoleAsync(operadorUser, Roles.Operador);
+
+                result = await userManager.CreateAsync(operadorPendienteUser, "operador123");
+                if (result.Succeeded)
+                    await userManager.AddToRoleAsync(operadorPendienteUser, Roles.Operador);
             }
 
             // ── Seed RF-02: siempre verifica si faltan datos de navegación ────────

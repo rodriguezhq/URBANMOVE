@@ -24,9 +24,22 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
         [Required]
         public bool Activo { get; set; } = true;
 
+        [Required]
+        public EstadoAprobacion EstadoAprobacion { get; set; } = EstadoAprobacion.Aprobado;
+
+        [MaxLength(300)]
+        public string? MotivoRechazo { get; set; }
+
         // Relaciones
 
         public ICollection<PuntosLedger> HistorialPuntos { get; set; } = [];
+    }
+
+    public enum EstadoAprobacion
+    {
+        Pendiente,
+        Aprobado,
+        Rechazado
     }
 
     public static class Roles

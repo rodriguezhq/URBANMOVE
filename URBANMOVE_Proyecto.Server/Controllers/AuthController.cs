@@ -44,6 +44,16 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
                 return Unauthorized(new { message = "Credenciales inválidas" });
 
+            var rolesPrevios = await _userManager.GetRolesAsync(user);
+            if (rolesPrevios.Contains(Roles.Operador) && user.EstadoAprobacion != EstadoAprobacion.Aprobado)
+            {
+                var mensaje = user.EstadoAprobacion == EstadoAprobacion.Pendiente
+                    ? "Tu cuenta de operador está pendiente de aprobación por un administrador."
+                    : $"Tu solicitud de operador fue rechazada. Motivo: {user.MotivoRechazo}";
+
+                return Unauthorized(new { message = mensaje });
+            }
+
             await _signInManager.SignInAsync(user, isPersistent: true);
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -141,6 +151,18 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             {
                 var errors = string.Join(",", result.Errors.Select(e => e.Description));
                 return BadRequest(new { message = errors });
+            }
+
+            var solicitaOperador = request.RolSolicitado == Roles.Operador;
+
+            if (solicitaOperador)
+            {
+                user.EstadoAprobacion = EstadoAprobacion.Pendiente;
+                user.Activo = false;
+                await _userManager.UpdateAsync(user);
+                await _userManager.AddToRoleAsync(user, Roles.Operador);
+
+                return Ok(new { message = "Tu solicitud fue registrada. Un administrador revisará tu cuenta de operador antes de que puedas iniciar sesión." });
             }
 
             await _userManager.AddToRoleAsync(user, Roles.Ciudadano);
@@ -241,6 +263,79 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new { message = "Correo electrónico verificado exitosamente" });
         }
 
+        [Authorize(Roles = Roles.Admin)]
+        [HttpGet("operadores/pendientes")]
+        [ProducesResponseType<List<OperadorPendienteDto>>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> ListarOperadoresPendientes()
+        {
+            var operadoresEnRol = await _userManager.GetUsersInRoleAsync(Roles.Operador);
+
+            var pendientes = operadoresEnRol
+                .Where(u => u.EstadoAprobacion == EstadoAprobacion.Pendiente)
+                .OrderBy(u => u.FechaRegistro)
+                .Select(u => new OperadorPendienteDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    Email = u.Email ?? "",
+                    DNI = u.DNI,
+                    FechaRegistro = u.FechaRegistro
+                })
+                .ToList();
+
+            return Ok(pendientes);
+        }
+
+        [Authorize(Roles = Roles.Admin)]
+        [HttpPost("operadores/{id}/aprobar")]
+        public async Task<IActionResult> AprobarOperador(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(new { message = "Operador no encontrado" });
+
+            if (!await _userManager.IsInRoleAsync(user, Roles.Operador))
+                return BadRequest(new { message = "El usuario no tiene una solicitud de operador" });
+
+            user.EstadoAprobacion = EstadoAprobacion.Aprobado;
+            user.Activo = true;
+            user.MotivoRechazo = null;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                return BadRequest(new { message = errors });
+            }
+
+            return Ok(new { message = "Operador aprobado exitosamente" });
+        }
+
+        [Authorize(Roles = Roles.Admin)]
+        [HttpPost("operadores/{id}/rechazar")]
+        public async Task<IActionResult> RechazarOperador(string id, [FromBody] RechazarOperadorRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(new { message = "Operador no encontrado" });
+
+            if (!await _userManager.IsInRoleAsync(user, Roles.Operador))
+                return BadRequest(new { message = "El usuario no tiene una solicitud de operador" });
+
+            user.EstadoAprobacion = EstadoAprobacion.Rechazado;
+            user.Activo = false;
+            user.MotivoRechazo = request.Motivo;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                return BadRequest(new { message = errors });
+            }
+
+            return Ok(new { message = "Solicitud de operador rechazada" });
+        }
 
     }
 }

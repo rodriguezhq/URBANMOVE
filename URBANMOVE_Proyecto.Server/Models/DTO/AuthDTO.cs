@@ -1,4 +1,6 @@
-﻿namespace URBANMOVE_Proyecto.Server.Models.DTO
+﻿using URBANMOVE_Proyecto.Server.Models.Database;
+
+namespace URBANMOVE_Proyecto.Server.Models.DTO
 {
     public sealed class LoginRequest
     {
@@ -31,6 +33,8 @@
         public required string Password { get; set; }
         public required string ConfirmPassword { get; set; }
 
+        public string RolSolicitado { get; set; } = Roles.Ciudadano;
+
     }
 
     public sealed class SendPasswordResetRequest
@@ -49,6 +53,21 @@
     {
         public required string Email { get; set; }
         public required string Token { get; set; }
+    }
+
+    public sealed class OperadorPendienteDto
+    {
+        public required string Id { get; set; }
+        public required string Nombres { get; set; }
+        public required string Apellidos { get; set; }
+        public required string Email { get; set; }
+        public required string DNI { get; set; }
+        public required DateTime FechaRegistro { get; set; }
+    }
+
+    public sealed class RechazarOperadorRequest
+    {
+        public required string Motivo { get; set; }
     }
 
 }
