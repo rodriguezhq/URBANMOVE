@@ -7,6 +7,7 @@ import { MapIcon, Navigation, Save, X, Plus, Trash2 } from "lucide-react";
 import AppButton from "../Components/AppButton";
 import AppInput from "../Components/AppInput";
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { useNotification } from "../Components/Toast";
 
 export default function GestionRutasView() {
     const [lineas, setLineas] = useState<LineaDto[]>([]);
@@ -24,6 +25,7 @@ export default function GestionRutasView() {
     const [modoNuevaParada, setModoNuevaParada] = useState(false);
     const [nombreParadaNueva, setNombreParadaNueva] = useState('');
     const [coordParadaNueva, setCoordParadaNueva] = useState<{ lat: number; lng: number } | null>(null);
+    const {showSuccess, showDanger, showWarning} = useNotification()
 
     const cargarDatos = () => {
         NavegacionService.obtenerLineas().then(setLineas);
@@ -46,7 +48,7 @@ export default function GestionRutasView() {
     }
 
     const handleCalcular = async () => {
-        if (paradasSeleccionadas.length < 2) return alert("Selecciona al menos 2 paradas en el mapa.")
+        if (paradasSeleccionadas.length < 2) return showWarning("Selecciona al menos 2 paradas en el mapa.");
         try {
             const req = { coordinates: paradasSeleccionadas.map(p => ({ lat: p.lat, lng: p.lng })) };
             const res = await RutasAdminService.calcularTrazo(req);
@@ -58,12 +60,12 @@ export default function GestionRutasView() {
                 setTrazoDibujo(coordenadas);
             }
         } catch (error) {
-            alert('Error al calcular el trazo: ' + error);
+            showDanger('Error al calcular el trazo: ' + error);
         }
     }
 
     const handleGuardar = async () => {
-        if (!nombreRuta || !lineaId || !trazoCalculadoGeoJson) return alert("Faltan datos o calcular el trazo.");
+        if (!nombreRuta || !lineaId || !trazoCalculadoGeoJson) return showWarning("Faltan datos o calcular el trazo.");
         try {
             await RutasAdminService.guardarRuta({
                 nombre: nombreRuta,
@@ -71,14 +73,14 @@ export default function GestionRutasView() {
                 geoJsonRecorrido: trazoCalculadoGeoJson,
                 paradasIds: paradasSeleccionadas.map(p => p.id)
             });
-            alert("¡Ruta guardada exitosamente!");
+            showSuccess("¡Ruta guardada exitosamente!");
             RutasAdminService.listarRutas().then(setRutasExistentes);
             setNombreRuta('');
             setParadasSeleccionadas([]);
             setTrazoCalculadoGeoJson(null);
             setTrazoDibujo([]);
         } catch (error) {
-            alert("Error al guardar la ruta." + error);
+            showDanger("Error al guardar la ruta." + error);
         }
     };
 
@@ -89,7 +91,7 @@ export default function GestionRutasView() {
             setNombreLineaNueva('');
             NavegacionService.obtenerLineas().then(setLineas);
         } catch (error) {
-            alert('Error al crear la línea: ' + error);
+            showDanger('Error al crear la línea: ' + error);
         }
     };
 
@@ -102,7 +104,7 @@ export default function GestionRutasView() {
             setModoNuevaParada(false);
             NavegacionService.buscarParadas().then(setParadasTotales);
         } catch (error) {
-            alert('Error al crear la parada: ' + error);
+            showDanger('Error al crear la parada: ' + error);
         }
     };
 
@@ -111,8 +113,9 @@ export default function GestionRutasView() {
         try {
             await RutasAdminService.eliminarRuta(id);
             setRutasExistentes(prev => prev.filter(r => r.id !== id));
+            showSuccess('Ruta eliminada exitosamente.');
         } catch (error) {
-            alert('Error al eliminar la ruta: ' + error);
+            showDanger('Error al eliminar la ruta: ' + error);
         }
     };
 

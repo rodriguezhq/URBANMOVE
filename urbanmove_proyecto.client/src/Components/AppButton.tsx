@@ -3,7 +3,7 @@ import type { Appearance } from '../Types/styleTypes';
 import { twMerge } from 'tailwind-merge';
 import type { ButtonHTMLAttributes } from 'react';
 
-interface AuthButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface AppButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     appearance?: Appearance
 }
 
@@ -23,7 +23,7 @@ const buttonVariants = cva(
 
 
 
-export default function AppButton({ children, disabled, type = 'button', className, ...props }: AuthButtonProps) {
+export default function AppButton({ children, disabled, type = 'button', className, ...props }: AppButtonProps) {
     return (
         <button
             type={type}
