@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HardHat, Check, X } from "lucide-react";
+import { Download, HardHat, Check, X } from "lucide-react";
 import AppButton from "../Components/AppButton";
 import AppInput from "../Components/AppInput";
 import Spinner from "../Components/Spinner";
@@ -38,7 +38,15 @@ export default function OperadoresView() {
                         <p className="text-xs text-gray-500">Solicitudes pendientes de revisión</p>
                     </div>
                 </div>
-                <AppButton appearance="outline" onClick={cargar}>Actualizar</AppButton>
+                <div className="flex items-center gap-2">
+                    <AppButton appearance="outline" onClick={() => AuthService.exportarOperadores('csv')}>
+                        <Download size={16} className="mr-1" /> CSV
+                    </AppButton>
+                    <AppButton appearance="outline" onClick={() => AuthService.exportarOperadores('xml')}>
+                        <Download size={16} className="mr-1" /> XML
+                    </AppButton>
+                    <AppButton appearance="outline" onClick={cargar}>Actualizar</AppButton>
+                </div>
             </header>
 
             <div className="flex flex-col gap-4 p-6">

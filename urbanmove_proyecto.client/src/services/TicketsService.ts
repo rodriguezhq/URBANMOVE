@@ -1,5 +1,5 @@
 import type { TicketResumenDto } from "../Types/ticketsType";
-import { ApiClient } from "./api"
+import { ApiClient, descargarArchivo } from "./api"
 
 const TicketsService = {
     async obtenerMisTickests(): Promise<TicketResumenDto[]> {
@@ -9,6 +9,9 @@ const TicketsService = {
     async validarTicket(codigo: string): Promise<{ mensaje: string }> {
         const response = await ApiClient.post(`/tickets/validar/${codigo}`)
         return response.data;
+    },
+    async exportar(formato: 'csv' | 'xml') {
+        await descargarArchivo(`/tickets/exportar?formato=${formato}`, `tickets.${formato}`);
     }
 }
 

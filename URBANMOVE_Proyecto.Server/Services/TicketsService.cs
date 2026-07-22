@@ -8,7 +8,7 @@ namespace URBANMOVE_Proyecto.Server.Services
     {
         private readonly AppDbContext _db;
         private readonly FidelizacionService _fidelizacionService;
-        
+
         public TicketsService(AppDbContext db, FidelizacionService fidelizacionService)
         {
             _db = db;
@@ -80,7 +80,7 @@ namespace URBANMOVE_Proyecto.Server.Services
             // Cambiamos el estado y asignamos al operador que lo escaneó
             ticket.Estado = EstadoTicket.Validado;
             ticket.OperadorId = operadorId;
-            
+
             await _db.SaveChangesAsync();
 
             // Llamar al módulo de fidelización para otorgar los puntos (RF-05)
@@ -89,5 +89,26 @@ namespace URBANMOVE_Proyecto.Server.Services
             return true;
         }
 
+        public async Task<List<TicketExportDto>> ObtenerTodosLosTicketsAsync()
+        {
+            return await _db.Tickets
+                .Include(t => t.Salida)
+                    .ThenInclude(s => s.Ruta)
+                .Include(t => t.Unidad)
+                .Include(t => t.Usuario)
+                .OrderByDescending(t => t.FechaReserva)
+                .Select(t => new TicketExportDto
+                {
+                    Id = t.Id,
+                    Codigo = t.Codigo,
+                    Estado = t.Estado.ToString(),
+                    FechaReserva = t.FechaReserva,
+                    FechaHoraSalida = t.Salida.FechaHoraSalida,
+                    RutaNombre = t.Salida.Ruta.Nombre,
+                    PlacaUnidad = t.Unidad.Placa,
+                    UsuarioNombre = t.Usuario.Nombres + " " + t.Usuario.Apellidos
+                })
+                .ToListAsync();
+        }
     }
 }

@@ -395,5 +395,35 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             return Ok(new { message = "Contraseña actualizada exitosamente" });
         }
 
+        [Authorize(Roles = Roles.Admin)]
+        [HttpGet("operadores/exportar")]
+        public async Task<IActionResult> ExportarOperadores([FromQuery] string formato = "csv")
+        {
+            var operadoresEnRol = await _userManager.GetUsersInRoleAsync(Roles.Operador);
+
+            var datos = operadoresEnRol
+                .OrderBy(u => u.FechaRegistro)
+                .Select(u => new OperadorExportDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    Email = u.Email ?? "",
+                    DNI = u.DNI,
+                    Estado = u.EstadoAprobacion.ToString(),
+                    FechaRegistro = u.FechaRegistro
+                })
+                .ToList();
+
+            if (formato == "xml")
+            {
+                var xml = ExportHelper.ToXml(datos, "Operadores");
+                return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "operadores.xml");
+            }
+
+            var csv = ExportHelper.ToCsv(datos);
+            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "operadores.csv");
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-import { ApiClient } from './api';
+import { ApiClient, descargarArchivo } from './api';
 import type { CrearIncidenteData, EstadoIncidente, IncidenteResponseDto } from '../Types/incidentesTypes';
 
 export const IncidentesService = {
@@ -34,5 +34,9 @@ export const IncidentesService = {
 
     eliminar: async (id: number): Promise<void> => {
         await ApiClient.delete(`/incidentes/${id}`);
+    },
+
+    exportar: async (formato: 'csv' | 'xml') => {
+        await descargarArchivo(`/incidentes/exportar?formato=${formato}`, `incidentes.${formato}`);
     },
 };

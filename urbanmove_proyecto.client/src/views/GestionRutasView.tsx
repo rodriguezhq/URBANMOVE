@@ -202,7 +202,13 @@ export default function GestionRutasView() {
 
                 {/* Sección: Rutas existentes */}
                 <div className="border-t pt-3 mt-auto">
-                    <h3 className="font-bold text-sm mb-2">Rutas existentes ({rutasExistentes.length})</h3>
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-sm">Rutas existentes ({rutasExistentes.length})</h3>
+                        <div className="flex gap-1">
+                            <AppButton appearance="outline" onClick={() => RutasAdminService.exportar('csv')} className="text-xs px-2 py-1">CSV</AppButton>
+                            <AppButton appearance="outline" onClick={() => RutasAdminService.exportar('xml')} className="text-xs px-2 py-1">XML</AppButton>
+                        </div>
+                    </div>
                     <div className="flex flex-col gap-1 max-h-32 overflow-y-auto">
                         {rutasExistentes.map(r => (
                             <div key={r.id} className="flex justify-between items-center bg-gray-50 p-2 text-sm border rounded">

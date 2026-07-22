@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { ClipboardList, RefreshCcw, Trash2 } from 'lucide-react';
+import { ClipboardList, Download, RefreshCcw, Trash2 } from 'lucide-react';
 import Spinner from '../Components/Spinner';
+import AppButton from '../Components/AppButton';
 import EstadoBadge from '../Components/IncidentesComponents/EstadoBadge';
 import { useGestionIncidentes } from '../Hooks/useGestionIncidentes';
+import { IncidentesService } from '../services/IncidentesService';
 import type { CategoriaIncidente, EstadoIncidente } from '../Types/incidentesTypes';
 
 const categorias: (CategoriaIncidente | 'Todas')[] = ['Todas', 'Accidente', 'Congestion', 'Vandalismo'];
@@ -48,14 +50,22 @@ export default function GestionIncidentesView() {
                         <p className="text-xs text-gray-500">Revisa y actualiza el estado de los reportes ciudadanos</p>
                     </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={cargarIncidentes}
-                    className="flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm text-blue-950 hover:bg-gray-50"
-                >
-                    <RefreshCcw size={16} />
-                    Actualizar
-                </button>
+                <div className="flex items-center gap-2">
+                    <AppButton appearance="outline" onClick={() => IncidentesService.exportar('csv')}>
+                        <Download size={16} className="mr-1" /> CSV
+                    </AppButton>
+                    <AppButton appearance="outline" onClick={() => IncidentesService.exportar('xml')}>
+                        <Download size={16} className="mr-1" /> XML
+                    </AppButton>
+                    <button
+                        type="button"
+                        onClick={cargarIncidentes}
+                        className="flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm text-blue-950 hover:bg-gray-50"
+                    >
+                        <RefreshCcw size={16} />
+                        Actualizar
+                    </button>
+                </div>
             </header>
 
             <div className="flex flex-col gap-4 p-6">

@@ -84,4 +84,15 @@ namespace URBANMOVE_Proyecto.Server.Models.DTO
         public required string NewPassword { get; set; }
         public required string ConfirmNewPassword { get; set; }
     }
+
+    public sealed class OperadorExportDto
+    {
+        public required string Id { get; set; }
+        public required string Nombres { get; set; }
+        public required string Apellidos { get; set; }
+        public required string Email { get; set; }
+        public required string DNI { get; set; }
+        public required string Estado { get; set; }
+        public required DateTime FechaRegistro { get; set; }
+    }
 }

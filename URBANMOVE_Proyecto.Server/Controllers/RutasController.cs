@@ -173,5 +173,31 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
             return Ok(new { mensaje = "Ruta eliminada exitosamente" });
         }
+
+        [HttpGet("exportar")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Exportar([FromQuery] string formato = "csv")
+        {
+            var rutas = await _dbContext.Rutas
+                .Include(r => r.Linea)
+                .Include(r => r.RutaParadas)
+                .Select(r => new RutaListItemDto
+                {
+                    Id = r.Id,
+                    Nombre = r.Nombre,
+                    LineaNombre = r.Linea.Nombre,
+                    CantidadParadas = r.RutaParadas.Count
+                })
+                .ToListAsync();
+
+            if (formato == "xml")
+            {
+                var xml = ExportHelper.ToXml(rutas, "Rutas");
+                return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "rutas.xml");
+            }
+
+            var csv = ExportHelper.ToCsv(rutas);
+            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "rutas.csv");
+        }
     }
 }
