@@ -2,12 +2,12 @@
 
 # Integrantes
 
-- 
-- 
-- 
-- 
+- Araujo Champi José Eduardo
+- Diaz Vega Bruno Nivardo
+- Huaynate Achachau José Luis
+- Melgarejo Guzmán Renzo Gustavo
 - Poves Martinez Alessandro Piero
-- 
+- Rodriguez Orihuela Scoot Fredy
 
 # Requerimientos
 
