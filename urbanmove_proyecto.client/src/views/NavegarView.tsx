@@ -5,7 +5,8 @@ import EmptyState from '../Components/NavegarComponents/EmptyState';
 import { useCallback, useEffect, useState } from 'react';
 import type { FiltrosBusqueda, LineaDto, ParadaDto, ResultadoPaginadoDto, RutaResumenDto } from '../Types/navegacionTypes';
 import { NavegacionService } from '../services/NavegacionService';
-import { MapContainer, TileLayer, Polyline, Marker, Popup, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup, GeoJSON, Tooltip } from 'react-leaflet';
+import L from 'leaflet';
 import AppButton from '../Components/AppButton';
 import { useNotification } from '../Components/Toast';
 import { Dialog } from '../Components/Dialog';
@@ -250,20 +251,46 @@ export default function NavegarView() {
                                 />
                             )}
 
-                            {/* Dibujar marcadores de origen y destino */}
-                            {trazoRuta.length > 0 && (
-                                <>
-                                    {/* Marcador Origen */}
-                                    <Marker position={trazoRuta[0]}>
-                                        <Popup>Origen: {rutaSeleccionada?.paradas[0].parada.nombre}</Popup>
-                                    </Marker>
+                            {/* Dibujar todos los paraderos de la ruta */}
+                            {rutaSeleccionada?.paradas && rutaSeleccionada.paradas.map((rp, index) => {
+                                const isOrigen = index === 0;
+                                const isDestino = index === rutaSeleccionada.paradas.length - 1;
+                                
+                                let etiqueta = `Parada ${index + 1}: ${rp.parada.nombre}`;
+                                let tipo: 'origen' | 'destino' | 'intermedio' = 'intermedio';
+                                
+                                if (isOrigen) {
+                                    etiqueta = `Origen: ${rp.parada.nombre}`;
+                                    tipo = 'origen';
+                                } else if (isDestino) {
+                                    etiqueta = `Destino: ${rp.parada.nombre}`;
+                                    tipo = 'destino';
+                                }
 
-                                    {/* Marcador Destino */}
-                                    <Marker position={trazoRuta[trazoRuta.length - 1]}>
-                                        <Popup>Destino: {rutaSeleccionada?.paradas.at(-1)?.parada.nombre}</Popup>
+                                const customIcon = L.divIcon({
+                                    className: '', // Vaciamos la clase base de leaflet para usar solo tailwind
+                                    html: `<div class="rounded-full shadow-md border-2 border-white ${
+                                        tipo === 'origen' ? 'bg-green-500 w-5 h-5' : 
+                                        tipo === 'destino' ? 'bg-red-500 w-5 h-5' : 
+                                        'bg-violet-500 w-4 h-4 ml-[2px] mt-[2px]'
+                                    }"></div>`,
+                                    iconSize: [20, 20],
+                                    iconAnchor: [10, 10], // Centro
+                                });
+
+                                return (
+                                    <Marker key={rp.id} position={[rp.parada.lat, rp.parada.lng]} icon={customIcon}>
+                                        <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
+                                            <span className={`font-bold ${
+                                                tipo === 'origen' ? 'text-green-700' : 
+                                                tipo === 'destino' ? 'text-red-700' : 
+                                                'text-violet-700'
+                                            }`}>{etiqueta}</span>
+                                        </Tooltip>
+                                        <Popup>{etiqueta}</Popup>
                                     </Marker>
-                                </>
-                            )}
+                                );
+                            })}
                         </MapContainer>
                     </div>
                 </div>

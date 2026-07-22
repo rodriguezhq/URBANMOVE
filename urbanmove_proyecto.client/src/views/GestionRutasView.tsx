@@ -6,7 +6,8 @@ import { RutasAdminService } from "../services/RutasAdminService";
 import { MapIcon, Navigation, Save, X, Plus, Trash2, List, MapPin, Route } from "lucide-react";
 import AppButton from "../Components/AppButton";
 import AppInput from "../Components/AppInput";
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents, Tooltip } from "react-leaflet";
+import L from 'leaflet';
 import { useNotification } from "../Components/Toast";
 
 const TABS = [
@@ -315,19 +316,55 @@ export default function GestionRutasView() {
                     )}
 
                     {paradasTotales.map(p => {
-                        const seleccionada = paradasSeleccionadas.some(ps => ps.id === p.id);
+                        const indexSeleccion = paradasSeleccionadas.findIndex(ps => ps.id === p.id);
+                        const seleccionada = indexSeleccion !== -1;
+                        const isOrigen = seleccionada && indexSeleccion === 0;
+                        const isDestino = seleccionada && indexSeleccion === paradasSeleccionadas.length - 1 && paradasSeleccionadas.length > 1;
+
+                        let colorClass = "bg-gray-400 w-3 h-3 mt-[4px] ml-[4px]"; // No seleccionada
+                        let textColor = "text-gray-600";
+                        let etiqueta = p.nombre;
+
+                        if (tab === 'rutas') {
+                            if (isOrigen) {
+                                colorClass = "bg-green-500 w-5 h-5";
+                                textColor = "text-green-700";
+                                etiqueta = `Origen: ${p.nombre}`;
+                            } else if (isDestino) {
+                                colorClass = "bg-red-500 w-5 h-5";
+                                textColor = "text-red-700";
+                                etiqueta = `Destino: ${p.nombre}`;
+                            } else if (seleccionada) {
+                                colorClass = "bg-violet-500 w-4 h-4 mt-[2px] ml-[2px]";
+                                textColor = "text-violet-700";
+                                etiqueta = `Parada ${indexSeleccion + 1}: ${p.nombre}`;
+                            }
+                        } else {
+                            colorClass = "bg-violet-500 w-3 h-3 mt-[4px] ml-[4px]";
+                            textColor = "text-violet-700";
+                        }
+
+                        const customIcon = L.divIcon({
+                            className: '',
+                            html: `<div class="rounded-full shadow-sm border-2 border-white transition-colors duration-200 ${colorClass}"></div>`,
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10],
+                        });
+
                         return (
                             <Marker
                                 key={p.id}
                                 position={[p.lat, p.lng]}
+                                icon={customIcon}
                                 eventHandlers={{ 
                                     click: () => {
                                         if (tab === 'rutas') toggleParada(p);
                                     } 
                                 }}
-                                opacity={tab === 'rutas' ? (seleccionada ? 1 : 0.6) : 1}
                             >
-                                <Popup>{p.nombre}</Popup>
+                                <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
+                                    <span className={`font-bold ${textColor}`}>{etiqueta}</span>
+                                </Tooltip>
                             </Marker>
                         );
                     })}
