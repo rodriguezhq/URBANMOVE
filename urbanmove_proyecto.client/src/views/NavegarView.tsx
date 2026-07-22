@@ -7,6 +7,8 @@ import type { FiltrosBusqueda, LineaDto, ParadaDto, ResultadoPaginadoDto, RutaRe
 import { NavegacionService } from '../services/NavegacionService';
 import { MapContainer, TileLayer, Polyline, Marker, Popup, GeoJSON } from 'react-leaflet';
 import AppButton from '../Components/AppButton';
+import { useNotification } from '../Components/Toast';
+import { Dialog } from '../Components/Dialog';
 const FILTROS_INICIALES: FiltrosBusqueda = {
     soloConAsientos: false,
     pagina: 1,
@@ -23,14 +25,16 @@ export default function NavegarView() {
     const [cargandoParadas, setCargandoParadas] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [rutaSeleccionada, setRutaSeleccionada] = useState<RutaResumenDto | null>(null);
+    const [showDialog, setShowDialog] = useState(false);
+    const [codigoTicket, setCodigoTicket] = useState<string | null>(null);
 
     const hayResultados = (resultado?.datos?.length ?? 0) > 0;
     const totalPaginas = resultado?.totalPaginas ?? 0;
     const trazoRuta = rutaSeleccionada?.paradas.map(rp => [rp.parada.lat, rp.parada.lng] as [number, number]) || [];
-    
+
     // Parseamos el string GeoJSON que viene del backend a un objeto JSON
-    const recorridoObj = rutaSeleccionada?.recorridoGeoJson 
-        ? JSON.parse(rutaSeleccionada.recorridoGeoJson) 
+    const recorridoObj = rutaSeleccionada?.recorridoGeoJson
+        ? JSON.parse(rutaSeleccionada.recorridoGeoJson)
         : null;
 
     useEffect(() => {
@@ -100,167 +104,189 @@ export default function NavegarView() {
         if (!confirm('¿Desas resevar un asiento para esta ruta')) return;
         try {
             const res = await NavegacionService.reservarAsiento(salidaId);
-            alert(`¡${res.mensaje}! Tu código de ticket es: ${res.codigo}`);
+            setCodigoTicket(res.codigo);
+            setShowDialog(true);
             aplicarBusqueda();
         } catch (error: any) {
             console.log('Error: ' + (error?.response?.data?.mensaje || 'No se pudo reservar'));
         }
     }
     return (
-        <div className="flex min-h-screen flex-col bg-gray-50">
+        <>
+            <div className="flex min-h-screen flex-col bg-gray-50">
 
-            {/* ── Encabezado de la página ── */}
-            <header className="border-b border-gray-200 bg-white px-6 py-5">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100">
-                        <Map size={18} className="text-violet-600" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-blue-950">Buscar rutas</h1>
-                        <p className="text-xs text-gray-500">
-                            Filtra por origen, destino, línea, horario y disponibilidad de asientos
-                        </p>
-                    </div>
-                </div>
-            </header>
-
-            {/* ── Cuerpo: filtros + resultados + MAPA ── */}
-            <div className="flex flex-1 gap-6 p-6">
-
-                <div className="flex flex-col w-[45%] gap-6 max-h-[85vh] overflow-y-auto pr-4">
-
-                    <FiltrosPanel
-                        filtros={filtros}
-                        lineas={lineas}
-                        paradas={paradas}
-                        cargandoParadas={cargandoParadas}
-                        cargando={cargandoRutas}
-                        onFiltroChange={actualizarFiltro}
-                        onBuscarParadas={buscarParadas}
-                        onAplicar={aplicarBusqueda}
-                        onLimpiar={limpiarFiltros}
-                    />
-
-                    {/*  encabezado informativo */}
-                    {!cargandoRutas && resultado !== null && (
-                        <div className="flex flex-col gap-4">
-                            <p className="text-sm text-gray-500">
-                                {resultado.totalRegistros === 0
-                                    ? 'Sin resultados'
-                                    : `${resultado.totalRegistros} ruta(s) encontrada(s)`}
-                            </p>
-
-                            {!hayResultados && <EmptyState />}
-
-                            {/* Lista de rutas */}
-                            {hayResultados && (
-                                <div className="flex flex-col gap-4">
-                                    {resultado.datos.map(ruta => (
-                                        <RutaCard
-                                            key={ruta.id}
-                                            ruta={ruta}
-                                            onVermapa={setRutaSeleccionada}
-                                            onReservar={handleReservar}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                            {totalPaginas > 1 && (
-                                <nav
-                                    className="flex items-center justify-center gap-2 pt-4 pb-8"
-                                    aria-label="Paginación de rutas"
-                                >
-                                    <AppButton
-                                        id="btn-pagina-anterior"
-                                        appearance="outline"
-                                        disabled={resultado.paginaActual <= 1}
-                                        onClick={() => cambiarPagina(resultado.paginaActual - 1)}
-                                        className="flex items-center gap-1 border-gray-300 text-gray-600"
-                                    >
-                                        <ChevronLeft size={16} />
-                                        Anterior
-                                    </AppButton>
-
-                                    {/* Números de página */}
-                                    {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(p => (
-                                        <AppButton
-                                            key={p}
-                                            id={`btn-pagina-${p}`}
-                                            appearance={p === resultado.paginaActual ? 'filled' : 'outline'}
-                                            onClick={() => cambiarPagina(p)}
-                                            className={
-                                                p === resultado.paginaActual
-                                                    ? 'min-w-9 justify-center bg-violet-600 border-transparent text-white'
-                                                    : 'min-w-9 justify-center border-gray-300 text-gray-600'
-                                            }
-                                        >
-                                            {p}
-                                        </AppButton>
-                                    ))}
-
-                                    <AppButton
-                                        id="btn-pagina-siguiente"
-                                        appearance="outline"
-                                        disabled={resultado.paginaActual >= totalPaginas}
-                                        onClick={() => cambiarPagina(resultado.paginaActual + 1)}
-                                        className="flex items-center gap-1 border-gray-300 text-gray-600"
-                                    >
-                                        Siguiente
-                                        <ChevronRight size={16} />
-                                    </AppButton>
-                                </nav>
-                            )}
+                {/* ── Encabezado de la página ── */}
+                <header className="border-b border-gray-200 bg-white px-6 py-5">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100">
+                            <Map size={18} className="text-violet-600" />
                         </div>
-                    )}
-                </div>
+                        <div>
+                            <h1 className="text-xl font-bold text-blue-950">Buscar rutas</h1>
+                            <p className="text-xs text-gray-500">
+                                Filtra por origen, destino, línea, horario y disponibilidad de asientos
+                            </p>
+                        </div>
+                    </div>
+                </header>
 
-                <div className="w-[55%] h-[85vh] sticky top-6 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden z-0">
-                    <MapContainer
-                        center={[-12.0651, -75.2048]} // Centro de Huancayo
-                        zoom={13}
-                        style={{ height: '100%', width: '100%' }}
-                    >
-                        <TileLayer
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                            attribution="&copy; OpenStreetMap"
+                {/* ── Cuerpo: filtros + resultados + MAPA ── */}
+                <div className="flex flex-1 gap-6 p-6">
+
+                    <div className="flex flex-col w-[45%] gap-6 max-h-[85vh] overflow-y-auto pr-4">
+
+                        <FiltrosPanel
+                            filtros={filtros}
+                            lineas={lineas}
+                            paradas={paradas}
+                            cargandoParadas={cargandoParadas}
+                            cargando={cargandoRutas}
+                            onFiltroChange={actualizarFiltro}
+                            onBuscarParadas={buscarParadas}
+                            onAplicar={aplicarBusqueda}
+                            onLimpiar={limpiarFiltros}
                         />
 
-                        {/* Dibujar el trazo real usando GeoJSON */}
-                        {recorridoObj && (
-                            <GeoJSON
-                                key={`geojson-${rutaSeleccionada?.id}`} // Key importante para que se actualice al cambiar de ruta
-                                data={recorridoObj}
-                                style={{ color: '#7c3aed', weight: 6, opacity: 0.8 }}
+                        {/*  encabezado informativo */}
+                        {!cargandoRutas && resultado !== null && (
+                            <div className="flex flex-col gap-4">
+                                <p className="text-sm text-gray-500">
+                                    {resultado.totalRegistros === 0
+                                        ? 'Sin resultados'
+                                        : `${resultado.totalRegistros} ruta(s) encontrada(s)`}
+                                </p>
+
+                                {!hayResultados && <EmptyState />}
+
+                                {/* Lista de rutas */}
+                                {hayResultados && (
+                                    <div className="flex flex-col gap-4">
+                                        {resultado.datos.map(ruta => (
+                                            <RutaCard
+                                                key={ruta.id}
+                                                ruta={ruta}
+                                                onVermapa={setRutaSeleccionada}
+                                                onReservar={handleReservar}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                                {totalPaginas > 1 && (
+                                    <nav
+                                        className="flex items-center justify-center gap-2 pt-4 pb-8"
+                                        aria-label="Paginación de rutas"
+                                    >
+                                        <AppButton
+                                            id="btn-pagina-anterior"
+                                            appearance="outline"
+                                            disabled={resultado.paginaActual <= 1}
+                                            onClick={() => cambiarPagina(resultado.paginaActual - 1)}
+                                            className="flex items-center gap-1 border-gray-300 text-gray-600"
+                                        >
+                                            <ChevronLeft size={16} />
+                                            Anterior
+                                        </AppButton>
+
+                                        {/* Números de página */}
+                                        {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(p => (
+                                            <AppButton
+                                                key={p}
+                                                id={`btn-pagina-${p}`}
+                                                appearance={p === resultado.paginaActual ? 'filled' : 'outline'}
+                                                onClick={() => cambiarPagina(p)}
+                                                className={
+                                                    p === resultado.paginaActual
+                                                        ? 'min-w-9 justify-center bg-violet-600 border-transparent text-white'
+                                                        : 'min-w-9 justify-center border-gray-300 text-gray-600'
+                                                }
+                                            >
+                                                {p}
+                                            </AppButton>
+                                        ))}
+
+                                        <AppButton
+                                            id="btn-pagina-siguiente"
+                                            appearance="outline"
+                                            disabled={resultado.paginaActual >= totalPaginas}
+                                            onClick={() => cambiarPagina(resultado.paginaActual + 1)}
+                                            className="flex items-center gap-1 border-gray-300 text-gray-600"
+                                        >
+                                            Siguiente
+                                            <ChevronRight size={16} />
+                                        </AppButton>
+                                    </nav>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="w-[55%] h-[85vh] sticky top-6 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden z-0">
+                        <MapContainer
+                            center={[-12.0651, -75.2048]} // Centro de Huancayo
+                            zoom={13}
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <TileLayer
+                                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                attribution="&copy; OpenStreetMap"
                             />
-                        )}
 
-                        {/* Si no hay GeoJSON, caemos al Polyline básico de las paradas (opcional, pero buena práctica por si falla) */}
-                        {!recorridoObj && trazoRuta.length > 0 && (
-                            <Polyline
-                                positions={trazoRuta}
-                                color="#7c3aed" // Color violeta
-                                weight={6}
-                                opacity={0.8}
-                            />
-                        )}
+                            {/* Dibujar el trazo real usando GeoJSON */}
+                            {recorridoObj && (
+                                <GeoJSON
+                                    key={`geojson-${rutaSeleccionada?.id}`} // Key importante para que se actualice al cambiar de ruta
+                                    data={recorridoObj}
+                                    style={{ color: '#7c3aed', weight: 6, opacity: 0.8 }}
+                                />
+                            )}
 
-                        {/* Dibujar marcadores de origen y destino */}
-                        {trazoRuta.length > 0 && (
-                            <>
-                                {/* Marcador Origen */}
-                                <Marker position={trazoRuta[0]}>
-                                    <Popup>Origen: {rutaSeleccionada?.paradas[0].parada.nombre}</Popup>
-                                </Marker>
+                            {/* Si no hay GeoJSON, caemos al Polyline básico de las paradas (opcional, pero buena práctica por si falla) */}
+                            {!recorridoObj && trazoRuta.length > 0 && (
+                                <Polyline
+                                    positions={trazoRuta}
+                                    color="#7c3aed" // Color violeta
+                                    weight={6}
+                                    opacity={0.8}
+                                />
+                            )}
 
-                                {/* Marcador Destino */}
-                                <Marker position={trazoRuta[trazoRuta.length - 1]}>
-                                    <Popup>Destino: {rutaSeleccionada?.paradas.at(-1)?.parada.nombre}</Popup>
-                                </Marker>
-                            </>
-                        )}
-                    </MapContainer>
+                            {/* Dibujar marcadores de origen y destino */}
+                            {trazoRuta.length > 0 && (
+                                <>
+                                    {/* Marcador Origen */}
+                                    <Marker position={trazoRuta[0]}>
+                                        <Popup>Origen: {rutaSeleccionada?.paradas[0].parada.nombre}</Popup>
+                                    </Marker>
+
+                                    {/* Marcador Destino */}
+                                    <Marker position={trazoRuta[trazoRuta.length - 1]}>
+                                        <Popup>Destino: {rutaSeleccionada?.paradas.at(-1)?.parada.nombre}</Popup>
+                                    </Marker>
+                                </>
+                            )}
+                        </MapContainer>
+                    </div>
                 </div>
             </div>
-        </div>
+            <Dialog
+                isOpen={showDialog}
+                onClose={() => setShowDialog(false)}
+            >
+                <Dialog.Header>
+                    <h2>Asiento reservado</h2>
+                </Dialog.Header>
+                <Dialog.Content>
+                    <p>Se ha reservado un asiento para la ruta seleccionada. Revisa tus tickets para más detalles.</p>
+                    <div className='text-xl font-bold text-violet-600 mt-4 text-center bg-neutral-100 border border-neutral-200 p-4'>
+                    <p className='select-all'>{codigoTicket}</p>
+                    </div>
+                </Dialog.Content>
+                <Dialog.Footer>
+                    <Dialog.Trigger>
+                        Entendido
+                    </Dialog.Trigger>
+                </Dialog.Footer>
+            </Dialog>
+        </>
     );
 }
