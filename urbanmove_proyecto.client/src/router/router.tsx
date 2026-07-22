@@ -18,6 +18,7 @@ import TicketsView from '../views/TicketsView';
 import GestionRutasView from '../views/GestionRutasView';
 import PerfilView from '../views/PerfilView';
 import OperadoresView from '../views/OperadoresView';
+import ValidarTicketsView from '../views/ValidarTicketsView';
 
 export function AppRoutes() {
     return (
@@ -50,6 +51,7 @@ export function AppRoutes() {
                 <Route path="comercios" element={<GestionComerciosView />} />
                 <Route path="rutas" element={<GestionRutasView />} />
                 <Route path="operadores" element={<OperadoresView />} />
+                <Route path="validar-tickets" element={<ValidarTicketsView />} />
                 <Route path="perfil" element={<PerfilView />} />
             </Route>
 

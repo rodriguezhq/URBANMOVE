@@ -7,9 +7,12 @@ namespace URBANMOVE_Proyecto.Server.Services
     public class TicketsService
     {
         private readonly AppDbContext _db;
-        public TicketsService(AppDbContext db)
+        private readonly FidelizacionService _fidelizacionService;
+        
+        public TicketsService(AppDbContext db, FidelizacionService fidelizacionService)
         {
             _db = db;
+            _fidelizacionService = fidelizacionService;
         }
         public async Task<string> ReservarTicketAsync(string usuarioId, int salidaId)
         {
@@ -58,6 +61,32 @@ namespace URBANMOVE_Proyecto.Server.Services
                     PlacaUnidad = t.Unidad.Placa
                 })
                 .ToListAsync();
+        }
+
+        public async Task<bool> ValidarTicketAsync(string codigo, string operadorId)
+        {
+            var ticket = await _db.Tickets
+                .FirstOrDefaultAsync(t => t.Codigo == codigo);
+
+            if (ticket == null)
+                throw new Exception("El ticket no existe.");
+
+            if (ticket.Estado == EstadoTicket.Validado)
+                throw new Exception("El ticket ya fue validado previamente.");
+
+            if (ticket.Estado == EstadoTicket.Cancelado)
+                throw new Exception("El ticket se encuentra cancelado.");
+
+            // Cambiamos el estado y asignamos al operador que lo escaneó
+            ticket.Estado = EstadoTicket.Validado;
+            ticket.OperadorId = operadorId;
+            
+            await _db.SaveChangesAsync();
+
+            // Llamar al módulo de fidelización para otorgar los puntos (RF-05)
+            await _fidelizacionService.RegistrarPuntosPorTicketValidadoAsync(ticket.Id);
+
+            return true;
         }
 
     }

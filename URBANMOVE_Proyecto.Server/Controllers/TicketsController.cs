@@ -48,5 +48,23 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "operador,admin")]
+        [HttpPost("validar/{codigo}")]
+        public async Task<IActionResult> Validar(string codigo)
+        {
+            try
+            {
+                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (usuarioId == null) return Unauthorized();
+
+                await _ticketsService.ValidarTicketAsync(codigo, usuarioId);
+                return Ok(new { mensaje = "Ticket validado exitosamente. Puntos asignados." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
     }
 }
