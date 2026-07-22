@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/useAuth';
-import { use, useCallback, useMemo, useState } from 'react';
-import { AlertTriangle, Bus, CheckIcon, HardHat, Home, Layout, LogOut, Map, Menu, Send, SendHorizonal, Star, Store, Ticket, User, Wallet } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { AlertTriangle, CheckIcon, HardHat, Layout, LogOut, Map, Menu, SendHorizonal, Star, Store, Ticket, User } from 'lucide-react';
 import AppButton from '../AppButton';
 import { twMerge } from 'tailwind-merge';
 import type { RolType, UserType } from '../../Types/authType';
@@ -19,7 +19,6 @@ const Routes = {
         { url: '/app/navegar', icon: <SendHorizonal size={24} />, name: 'Navegar' },
         { url: '/app/tickets', icon: <Ticket size={24} />, name: 'Tickets' },
         { url: '/app/incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
-        { url: '/app/saldo', icon: <Wallet size={24} />, name: 'Saldo' },
         { url: '/app/puntos', icon: <Star size={24} />, name: 'Puntos' },
         { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ],
@@ -27,7 +26,6 @@ const Routes = {
         { url: '/app/dashboard', icon: <Layout size={24} />, name: 'Dashboard' },
         { url: '/app/gestion-incidentes', icon: <AlertTriangle size={24} />, name: 'Incidentes' },
         { url: '/app/validar-tickets', icon: <Ticket size={24} />, name: 'Tickets' },
-        { url: '/app/unidades', icon: <Bus size={24} />, name: 'Unidades' },
         { url: '/app/perfil', icon: <User size={24} />, name: 'Perfil' },
     ],
     admin: [

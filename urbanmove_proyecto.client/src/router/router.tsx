@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from '../views/Login';
 import MainLayout from '../Components/shared/MainLayout';
 import ProtectedRoute from '../Components/ProtectedRoute';
-import Home from '../views/Home';
 import IndexLayout from '../Components/shared/IndexLayout';
 import Register from '../views/Register';
 import RecoverPasswordView from '../views/RecoverPasswordView';
@@ -19,6 +18,15 @@ import GestionRutasView from '../views/GestionRutasView';
 import PerfilView from '../views/PerfilView';
 import OperadoresView from '../views/OperadoresView';
 import ValidarTicketsView from '../views/ValidarTicketsView';
+import { useAuth } from '../Hooks/useAuth';
+
+function HomeRedirect() {
+    const { user } = useAuth();
+    const role = user?.role || 'ciudadano';
+    if (role === 'ciudadano')
+        return <Navigate to="/app/navegar" replace />;
+    return <Navigate to="/app/dashboard" replace />;
+}
 
 export function AppRoutes() {
     return (
@@ -41,7 +49,7 @@ export function AppRoutes() {
                     </ProtectedRoute.Branch>
                 </ProtectedRoute>
             } >
-                <Route path="" element={<Home />} />
+                <Route path="" element={<HomeRedirect />} />
                 <Route path="dashboard" element={<DashboardView />} />
                 <Route path="navegar" element={<NavegarView />} />
                 <Route path="tickets" element={<TicketsView />} />
