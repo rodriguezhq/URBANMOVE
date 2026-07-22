@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
@@ -90,6 +91,87 @@ namespace URBANMOVE_Proyecto.Server.Controllers
             {
                 return BadRequest(new { mensaje = $"Error al guardar la ruta: {ex.Message}" });
             }
+        }
+
+        [HttpPost("lineas")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> CrearLinea([FromBody] LineaCrearRequest request)
+        {
+            try
+            {
+                var existe = await _dbContext.Lineas.AnyAsync(l => l.Nombre == request.Nombre);
+                if (existe)
+                    return BadRequest(new { mensaje = "Ya existe una línea con ese nombre." });
+
+                var linea = new Linea { Nombre = request.Nombre };
+                _dbContext.Lineas.Add(linea);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Línea creada exitosamente", lineaId = linea.Id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = $"Error al crear la línea: {ex.Message}" });
+            }
+        }
+
+        [HttpPost("paradas")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> CrearParada([FromBody] ParadaCrearRequest request)
+        {
+            try
+            {
+                var existe = await _dbContext.Paradas.AnyAsync(p => p.Nombre == request.Nombre);
+                if (existe)
+                    return BadRequest(new { mensaje = "Ya existe una parada con ese nombre." });
+
+                var gf = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+                var punto = gf.CreatePoint(new Coordinate(request.Lng, request.Lat));
+
+                var parada = new Parada { Nombre = request.Nombre, Ubicacion = punto };
+                _dbContext.Paradas.Add(parada);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Parada creada exitosamente", paradaId = parada.Id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = $"Error al crear la parada: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("")]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType<List<RutaListItemDto>>(StatusCodes.Status200OK)]
+        public async Task<IActionResult> ListarRutas()
+        {
+            var rutas = await _dbContext.Rutas
+                .Include(r => r.Linea)
+                .Include(r => r.RutaParadas)
+                .Select(r => new RutaListItemDto
+                {
+                    Id = r.Id,
+                    Nombre = r.Nombre,
+                    LineaNombre = r.Linea.Nombre,
+                    CantidadParadas = r.RutaParadas.Count
+                })
+                .ToListAsync();
+
+            return Ok(rutas);
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> EliminarRuta(int id)
+        {
+            var ruta = await _dbContext.Rutas.FindAsync(id);
+            if (ruta == null)
+                return NotFound(new { mensaje = "Ruta no encontrada" });
+
+            _dbContext.Rutas.Remove(ruta);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Ruta eliminada exitosamente" });
         }
     }
 }

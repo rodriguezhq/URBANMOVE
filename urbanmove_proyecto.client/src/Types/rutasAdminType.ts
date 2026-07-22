@@ -20,3 +20,20 @@ export interface GuardarRutaResponse {
     mensaje: string,
     rutaId: number,
 }
+export interface LineaCrearRequest {
+    nombre: string;
+}
+export interface ParadaCrearRequest {
+    nombre: string;
+    lat: number;
+    lng: number;
+}
+export interface RutaListItem {
+    id: number;
+    nombre: string;
+    lineaNombre: string;
+    cantidadParadas: number;
+}
+export interface MensajeResponse {
+    mensaje: string;
+}

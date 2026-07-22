@@ -316,12 +316,17 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                         .HasColumnType("LINESTRING")
                         .HasAnnotation("Sqlite:Srid", 4326);
 
+                    b.Property<int?>("RutaPareadaId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LineaId");
 
                     b.HasIndex("Nombre")
                         .IsUnique();
+
+                    b.HasIndex("RutaPareadaId");
 
                     b.ToTable("Rutas");
                 });
@@ -647,7 +652,13 @@ namespace URBANMOVE_Proyecto.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("URBANMOVE_Proyecto.Server.Models.Database.Ruta", "RutaPareada")
+                        .WithMany()
+                        .HasForeignKey("RutaPareadaId");
+
                     b.Navigation("Linea");
+
+                    b.Navigation("RutaPareada");
                 });
 
             modelBuilder.Entity("URBANMOVE_Proyecto.Server.Models.Database.RutaParada", b =>

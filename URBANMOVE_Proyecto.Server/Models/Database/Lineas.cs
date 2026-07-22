@@ -40,6 +40,11 @@ namespace URBANMOVE_Proyecto.Server.Models.Database
         public required Linea Linea { get; set; }
 
 
+        public int? RutaPareadaId { get; set; }
+        [ForeignKey(nameof(RutaPareadaId))]
+        public Ruta? RutaPareada { get; set; }
+
+
         public ICollection<RutaParada> RutaParadas { get; set; } = [];
         public ICollection<SalidaProgramada> Salidas { get; set; } = [];
     }
