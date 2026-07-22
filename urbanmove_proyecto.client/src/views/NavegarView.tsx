@@ -255,10 +255,10 @@ export default function NavegarView() {
                             {rutaSeleccionada?.paradas && rutaSeleccionada.paradas.map((rp, index) => {
                                 const isOrigen = index === 0;
                                 const isDestino = index === rutaSeleccionada.paradas.length - 1;
-                                
+
                                 let etiqueta = `Parada ${index + 1}: ${rp.parada.nombre}`;
                                 let tipo: 'origen' | 'destino' | 'intermedio' = 'intermedio';
-                                
+
                                 if (isOrigen) {
                                     etiqueta = `Origen: ${rp.parada.nombre}`;
                                     tipo = 'origen';
@@ -269,23 +269,21 @@ export default function NavegarView() {
 
                                 const customIcon = L.divIcon({
                                     className: '', // Vaciamos la clase base de leaflet para usar solo tailwind
-                                    html: `<div class="rounded-full shadow-md border-2 border-white ${
-                                        tipo === 'origen' ? 'bg-green-500 w-5 h-5' : 
-                                        tipo === 'destino' ? 'bg-red-500 w-5 h-5' : 
-                                        'bg-violet-500 w-4 h-4 ml-[2px] mt-[2px]'
-                                    }"></div>`,
+                                    html: `<div class="rounded-full shadow-md border-2 border-white ${tipo === 'origen' ? 'bg-green-500 w-5 h-5' :
+                                        tipo === 'destino' ? 'bg-red-500 w-5 h-5' :
+                                            'bg-violet-500 w-4 h-4 ml-[2px] mt-[2px]'
+                                        }"></div>`,
                                     iconSize: [20, 20],
                                     iconAnchor: [10, 10], // Centro
                                 });
 
                                 return (
-                                    <Marker key={rp.id} position={[rp.parada.lat, rp.parada.lng]} icon={customIcon}>
+                                    <Marker key={rp.parada.id} position={[rp.parada.lat, rp.parada.lng]} icon={customIcon}>
                                         <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
-                                            <span className={`font-bold ${
-                                                tipo === 'origen' ? 'text-green-700' : 
-                                                tipo === 'destino' ? 'text-red-700' : 
-                                                'text-violet-700'
-                                            }`}>{etiqueta}</span>
+                                            <span className={`font-bold ${tipo === 'origen' ? 'text-green-700' :
+                                                tipo === 'destino' ? 'text-red-700' :
+                                                    'text-violet-700'
+                                                }`}>{etiqueta}</span>
                                         </Tooltip>
                                         <Popup>{etiqueta}</Popup>
                                     </Marker>

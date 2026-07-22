@@ -18,9 +18,9 @@ export default function RutaCard({ ruta, onVermapa, onReservar }: RutaCardProps)
     const ultimaParada = ruta.paradas.at(-1)?.parada.nombre ?? '—';
 
     return (
-        <article className="flex flex-col gap-0 overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+        <article className="flex flex-col gap-0 border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow relative">
             {/* ── Cabecera de la ruta ── */}
-            <header className="flex items-start justify-between gap-3 border-b border-gray-100 bg-gradient-to-r from-violet-600 to-violet-500 px-5 py-4">
+            <header className="flex items-start justify-between gap-3 border-b border-gray-100 bg-gradient-to-r from-violet-600 to-violet-500 px-5 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="flex flex-col gap-1">
                     <h3 className="text-base font-bold text-white leading-tight">
                         {ruta.nombre}
@@ -32,9 +32,14 @@ export default function RutaCard({ ruta, onVermapa, onReservar }: RutaCardProps)
                         </span>
                     </div>
                 </div>
-                <div className="shrink-0 rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold text-white">
-                    {ruta.salidas.length} salida{ruta.salidas.length !== 1 ? 's' : ''}
-                </div>
+                <AppButton
+                    appearance="outline"
+                    className=" flex justify-center border-violet-200 text-violet-50 hover:bg-violet-50 hover:text-violet-800 gap-2"
+                    onClick={() => onVermapa && onVermapa(ruta)}
+                >
+                    <Map />
+                    Ver trazo en mapa
+                </AppButton>
             </header>
 
             {/* ── Ruta origen → destino ── */}
@@ -97,8 +102,11 @@ export default function RutaCard({ ruta, onVermapa, onReservar }: RutaCardProps)
 
                 {/* Salidas */}
                 <section className="flex flex-col gap-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                    <h4 className=" flex justify-between text-xs font-bold uppercase tracking-wider text-gray-500">
                         Salidas disponibles
+                        <span>
+                            {ruta.salidas.length} salida{ruta.salidas.length !== 1 ? 's' : ''}
+                        </span>
                     </h4>
                     {ruta.salidas.length === 0 ? (
                         <p className="text-xs text-gray-400 italic py-2">
@@ -112,18 +120,6 @@ export default function RutaCard({ ruta, onVermapa, onReservar }: RutaCardProps)
                         </div>
                     )}
                 </section>
-
-                {/* Acción: Ver mapa */}
-                <div className="pt-2 border-t border-gray-100 mt-2">
-                    <AppButton
-                        appearance="outline"
-                        className="w-full flex justify-center border-violet-200 text-violet-700 hover:bg-violet-50 hover:text-violet-800 gap-2"
-                        onClick={() => onVermapa && onVermapa(ruta)}
-                    >
-                        <Map />
-                        Ver trazo en mapa
-                    </AppButton>
-                </div>
             </div>
         </article>
     );
