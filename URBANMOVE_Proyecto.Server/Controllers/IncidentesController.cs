@@ -93,5 +93,21 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
             return Ok(new { message = "Incidente eliminado correctamente" });
         }
+
+        [HttpGet("exportar")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Exportar([FromQuery] string formato = "csv")
+        {
+            var lista = await _incidentes.ListarAsync(UsuarioId, Rol, null, null);
+
+            if (formato == "xml")
+            {
+                var xml = ExportHelper.ToXml(lista, "Incidentes");
+                return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "incidentes.xml");
+            }
+
+            var csv = ExportHelper.ToCsv(lista);
+            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "incidentes.csv");
+        }
     }
 }

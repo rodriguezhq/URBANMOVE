@@ -1,4 +1,4 @@
-import { ApiClient } from "./api";
+import { ApiClient, descargarArchivo } from "./api";
 import type { LoginType, UserType, OperadorPendienteType, RegisterResultType } from "../Types/authType";
 import type { RegisterType } from "../Types/RegisterType";
 
@@ -57,5 +57,8 @@ export const AuthService = {
   },
   editarPassword: async (currentPassword: string, newPassword: string, confirmNewPassword: string): Promise<void> => {
     await ApiClient.put("/auth/password", { currentPassword, newPassword, confirmNewPassword });
-  }
+  },
+  exportarOperadores: async (formato: 'csv' | 'xml') => {
+    await descargarArchivo(`/auth/operadores/exportar?formato=${formato}`, `operadores.${formato}`);
+  },
 };

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using URBANMOVE_Proyecto.Server.Models.DTO;
 using URBANMOVE_Proyecto.Server.Services;
 
 namespace URBANMOVE_Proyecto.Server.Controllers
@@ -41,6 +42,29 @@ namespace URBANMOVE_Proyecto.Server.Controllers
 
                 var tickets = await _ticketsService.ObtenerMisTicketsAsync(usuarioId);
                 return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("exportar")]
+        public async Task<IActionResult> Exportar([FromQuery] string formato = "csv")
+        {
+            try
+            {
+                var tickets = await _ticketsService.ObtenerTodosLosTicketsAsync();
+
+                if (formato == "xml")
+                {
+                    var xml = ExportHelper.ToXml(tickets, "Tickets");
+                    return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "tickets.xml");
+                }
+
+                var csv = ExportHelper.ToCsv(tickets);
+                return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "tickets.csv");
             }
             catch (Exception ex)
             {

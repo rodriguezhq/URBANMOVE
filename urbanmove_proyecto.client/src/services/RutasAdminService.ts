@@ -1,5 +1,5 @@
 import type { CalculateRuteRequest, CalculateRuteResponse, CrearRutaRequest, GuardarRutaResponse, LineaCrearRequest, ParadaCrearRequest, RutaListItem, MensajeResponse } from "../Types/rutasAdminType";
-import { ApiClient } from "./api";
+import { ApiClient, descargarArchivo } from "./api";
 
 export const RutasAdminService = {
     async calcularTrazo(request: CalculateRuteRequest): Promise<CalculateRuteResponse> {
@@ -49,5 +49,8 @@ export const RutasAdminService = {
         } catch (error: any) {
             throw new Error('Error al eliminar la ruta: ' + error);
         }
+    },
+    async exportar(formato: 'csv' | 'xml') {
+        await descargarArchivo(`/rutas/exportar?formato=${formato}`, `rutas.${formato}`);
     }
 }
