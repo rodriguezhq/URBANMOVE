@@ -33,14 +33,14 @@ namespace URBANMOVE_Proyecto.Server.Controllers
         }
         [Authorize(Roles = "ciudadano")]
         [HttpGet("mis_tickets")]
-        public async Task<IActionResult> ObtenerMisTickets()
+        public async Task<IActionResult> ObtenerMisTickets([FromQuery] int pagina = 1, [FromQuery] int tamanioPagina = 10)
         {
             try
             {
                 var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (usuarioId == null) return Unauthorized();
 
-                var tickets = await _ticketsService.ObtenerMisTicketsAsync(usuarioId);
+                var tickets = await _ticketsService.ObtenerMisTicketsAsync(usuarioId, pagina, tamanioPagina);
                 return Ok(tickets);
             }
             catch (Exception ex)

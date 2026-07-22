@@ -131,7 +131,7 @@ export default function NavegarView() {
                 </header>
 
                 {/* ── Cuerpo: filtros + resultados + MAPA ── */}
-                <div className="flex flex-1 gap-6 p-6">
+                <div className="flex flex-1 gap-2 p-4">
 
                     <div className="flex flex-col w-[45%] gap-6 max-h-[85vh] overflow-y-auto pr-4">
 
@@ -278,7 +278,7 @@ export default function NavegarView() {
                 <Dialog.Content>
                     <p>Se ha reservado un asiento para la ruta seleccionada. Revisa tus tickets para más detalles.</p>
                     <div className='text-xl font-bold text-violet-600 mt-4 text-center bg-neutral-100 border border-neutral-200 p-4'>
-                    <p className='select-all'>{codigoTicket}</p>
+                        <p className='select-all'>{codigoTicket}</p>
                     </div>
                 </Dialog.Content>
                 <Dialog.Footer>

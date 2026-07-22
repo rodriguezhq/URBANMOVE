@@ -42,14 +42,20 @@ namespace URBANMOVE_Proyecto.Server.Services
             await _db.SaveChangesAsync();
             return codigo;
         }
-        public async Task<List<TicketResumenDTO>> ObtenerMisTicketsAsync(string usuarioId)
+        public async Task<ResultadoPaginadoDto<TicketResumenDTO>> ObtenerMisTicketsAsync(string usuarioId, int pagina, int tamanioPagina)
         {
-            return await _db.Tickets
+            var query = _db.Tickets
                 .Include(t => t.Salida)
                     .ThenInclude(s => s.Ruta)
                 .Include(t => t.Unidad)
-                .Where(t => t.UsuarioId == usuarioId)
+                .Where(t => t.UsuarioId == usuarioId);
+
+            var totalRegistros = await query.CountAsync();
+
+            var datos = await query
                 .OrderByDescending(t => t.FechaReserva)
+                .Skip((pagina - 1) * tamanioPagina)
+                .Take(tamanioPagina)
                 .Select(t => new TicketResumenDTO
                 {
                     Id = t.Id,
@@ -61,6 +67,15 @@ namespace URBANMOVE_Proyecto.Server.Services
                     PlacaUnidad = t.Unidad.Placa
                 })
                 .ToListAsync();
+
+            return new ResultadoPaginadoDto<TicketResumenDTO>
+            {
+                PaginaActual = pagina,
+                TamanioPagina = tamanioPagina,
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamanioPagina),
+                Datos = datos
+            };
         }
 
         public async Task<bool> ValidarTicketAsync(string codigo, string operadorId)

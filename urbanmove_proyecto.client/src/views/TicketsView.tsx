@@ -4,22 +4,27 @@ import TicketsService from "../services/TicketsService";
 import Spinner from "../Components/Spinner";
 import { CheckCircle2, Clock, MapPin, TicketIcon } from "lucide-react";
 import QRCode from "react-qr-code";
+import type { ResultadoPaginadoDto } from "../Types/navegacionTypes";
+import AppButton from "../Components/AppButton";
 
 export default function TicketsView() {
-    const [tickets, setTickets] = useState<TicketResumenDto[]>([]);
+    const [resultado, setResultado] = useState<ResultadoPaginadoDto<TicketResumenDto> | null>(null);
+    const [paginaActual, setPaginaActual] = useState(1);
     const [cargando, setCargando] = useState(true);
+
     useEffect(() => {
-        TicketsService.obtenerMisTickests()
-            .then(setTickets)
+        setCargando(true);
+        TicketsService.obtenerMisTickests(paginaActual, 10)
+            .then(setResultado)
             .finally(() => setCargando(false));
-    }, []);
-    console.log(tickets)
-    const activos = tickets.filter(t => t.estado === 'Reservado');
-    const historial = tickets.filter(t => t.estado !== 'Reservado');
+    }, [paginaActual]);
+
+    const activos = resultado?.datos.filter(t => t.estado === 'Reservado') || [];
+    const historial = resultado?.datos.filter(t => t.estado !== 'Reservado') || [];
 
     if (cargando) return <div className="flex h-64 justify-center items-center"><Spinner /></div>;
     return (
-        <div className="p-4 px-4 mx-auto flex flex-col gap-8">
+        <div className="p-2 px-4 mx-auto flex flex-col gap-8">
             <div>
                 <h1 className="text-2xl font-bold text-blue-950 flex items-center gap-2">
                     <TicketIcon className="text-violet-600" /> Mis Tickets
@@ -31,7 +36,7 @@ export default function TicketsView() {
                 {activos.length === 0 ? (
                     <p className="text-gray-500 italic">No tienes tickets reservados actualmente.</p>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {activos.map(t => (
                             <div key={t.id} className="bg-white border-2 border-violet-500 rounded-2xl shadow-lg flex overflow-hidden">
                                 <div className="bg-violet-600 p-6 flex flex-col items-center justify-center text-white w-40 shrink-0">
@@ -69,6 +74,29 @@ export default function TicketsView() {
                         </div>
                     ))}
                 </div>
+
+                {/* Paginador */}
+                {resultado && resultado.totalPaginas > 1 && (
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                        <AppButton
+                            appearance="outline"
+                            disabled={resultado.paginaActual <= 1}
+                            onClick={() => setPaginaActual(p => Math.max(1, p - 1))}
+                        >
+                            Anterior
+                        </AppButton>
+                        <span className="font-bold text-gray-600">
+                            Página {resultado.paginaActual} de {resultado.totalPaginas}
+                        </span>
+                        <AppButton
+                            appearance="outline"
+                            disabled={resultado.paginaActual >= resultado.totalPaginas}
+                            onClick={() => setPaginaActual(p => p + 1)}
+                        >
+                            Siguiente
+                        </AppButton>
+                    </div>
+                )}
             </div>
         </div>
     )
