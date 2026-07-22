@@ -80,8 +80,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                     return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "tickets.xml");
                 }
 
-                var csv = ExportHelper.ToCsv(tickets);
-                return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "tickets.csv");
+                var csv = ExportHelper.ToCsvBytes(tickets);
+                return File(csv, "text/csv; charset=utf-8", "tickets.csv");
             }
             catch (Exception ex)
             {

@@ -421,8 +421,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "operadores.xml");
             }
 
-            var csv = ExportHelper.ToCsv(datos);
-            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "operadores.csv");
+            var csv = ExportHelper.ToCsvBytes(datos);
+            return File(csv, "text/csv; charset=utf-8", "operadores.csv");
         }
 
     }

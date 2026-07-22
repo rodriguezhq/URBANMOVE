@@ -106,8 +106,8 @@ namespace URBANMOVE_Proyecto.Server.Controllers
                 return File(System.Text.Encoding.UTF8.GetBytes(xml), "application/xml", "incidentes.xml");
             }
 
-            var csv = ExportHelper.ToCsv(lista);
-            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "incidentes.csv");
+            var csv = ExportHelper.ToCsvBytes(lista);
+            return File(csv, "text/csv; charset=utf-8", "incidentes.csv");
         }
     }
 }
