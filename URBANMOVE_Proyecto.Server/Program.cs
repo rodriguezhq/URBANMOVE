@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -106,9 +107,21 @@ builder.Services.Configure<GeneralSettings>(
     builder.Configuration.GetSection("General")
 );
 
+// Detras de un proxy (Railway) el TLS termina en el edge y la request llega
+// como HTTP plano. Sin esto la app no ve el esquema original y las cookies
+// Secure dejan de emitirse.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
+    // La IP del proxy no se conoce de antemano dentro del contenedor.
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
 
 // seed
 using (var scope = app.Services.CreateScope())
@@ -117,13 +130,36 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
     var routingService = scope.ServiceProvider.GetRequiredService<URBANMOVE_Proyecto.Server.Services.RoutingService>();
-    await DbInitializer.InitializeAsync(db, roleManager, userManager, routingService);
+
+    try
+    {
+        await DbInitializer.InitializeAsync(db, roleManager, userManager, routingService);
+    }
+    catch (Exception ex)
+    {
+        // El seed llama a OSRM publico; si falla no tumbamos el contenedor
+        // (en Railway seria un restart loop sin logs utiles).
+        app.Services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("DbInitializer")
+            .LogError(ex, "Fallo la inicializacion de la base de datos. La app arranca igual.");
+    }
 }
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
 app.UseStaticFiles();
+
+// IncidentesService guarda en wwwroot/uploads pero devuelve URLs /api/uploads/...,
+// que sin esto caerian en el fallback de la SPA.
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "uploads");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.GetFullPath(uploadsPath)),
+    RequestPath = "/api/uploads"
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -132,7 +168,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+// En produccion detras de un proxy que ya sirve HTTPS, redirigir aqui provoca
+// un bucle de redirecciones.
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -10,7 +10,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     /// Acceso para operadores y administradores autenticados.
     /// </summary>
     [ApiController]
-    [Route("dashboard")]
+    [Route("api/dashboard")]
     [Authorize(Roles = "operador,admin")]
     public class DashboardController : ControllerBase
     {

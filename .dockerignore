@@ -1,0 +1,35 @@
+# Node
+**/node_modules
+**/dist
+**/.vite
+
+# .NET
+**/bin
+**/obj
+**/*.user
+
+# Base de datos local: en el contenedor vive en el volumen (/data)
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Secretos y config local (se inyecta por variables de entorno en Railway)
+**/appsettings.json
+**/appsettings.Development.json
+**/*.env
+
+# Repo / editor / SO
+.git
+.gitignore
+.gitattributes
+.vs
+.vscode
+.idea
+**/.DS_Store
+
+# Docs y artefactos que no hacen falta en la imagen
+README.md
+**/CHANGELOG.md
+**/*.http
+Dockerfile
+.dockerignore

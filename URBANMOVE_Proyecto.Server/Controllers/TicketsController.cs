@@ -6,7 +6,7 @@ using URBANMOVE_Proyecto.Server.Services;
 
 namespace URBANMOVE_Proyecto.Server.Controllers
 {
-    [Route("tickets")]
+    [Route("api/tickets")]
     [ApiController]
     public class TicketsController : ControllerBase
     {

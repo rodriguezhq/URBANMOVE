@@ -8,7 +8,7 @@ using URBANMOVE_Proyecto.Server.Services;
 namespace URBANMOVE_Proyecto.Server.Controllers
 {
     [ApiController]
-    [Route("incidentes")]
+    [Route("api/incidentes")]
     [Authorize]
     public class IncidentesController : ControllerBase
     {

@@ -11,7 +11,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     /// Acceso exclusivo para ciudadanos autenticados.
     /// </summary>
     [ApiController]
-    [Route("navegacion")]
+    [Route("api/navegacion")]
     [Authorize(Roles = "ciudadano,admin,operador")]
     public class NavegacionController : ControllerBase
     {

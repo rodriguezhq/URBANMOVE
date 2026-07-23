@@ -11,7 +11,7 @@ using URBANMOVE_Proyecto.Server.Services;
 namespace URBANMOVE_Proyecto.Server.Controllers
 {
     [ApiController]
-    [Route("rutas")]
+    [Route("api/rutas")]
     public class RutasController : ControllerBase
     {
         private readonly AppDbContext _dbContext;

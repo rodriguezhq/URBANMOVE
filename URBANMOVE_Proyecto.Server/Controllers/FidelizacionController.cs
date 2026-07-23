@@ -11,7 +11,7 @@ namespace URBANMOVE_Proyecto.Server.Controllers
     /// Módulo RF-05 – Sistema de puntos eco (fidelización).
     /// </summary>
     [ApiController]
-    [Route("fidelizacion")]
+    [Route("api/fidelizacion")]
     [Authorize]
     public class FidelizacionController : ControllerBase
     {

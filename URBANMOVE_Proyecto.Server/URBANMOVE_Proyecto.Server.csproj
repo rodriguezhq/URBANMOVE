@@ -29,7 +29,9 @@
 	  <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- BuildClient=false en Docker: el cliente se compila en una etapa aparte con Node,
+       asi no hace falta el SDK de JavaScript de Visual Studio ni npm en la imagen del SDK. -->
+  <ItemGroup Condition="'$(BuildClient)' != 'false'">
     <ProjectReference Include="..\urbanmove_proyecto.client\urbanmove_proyecto.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
